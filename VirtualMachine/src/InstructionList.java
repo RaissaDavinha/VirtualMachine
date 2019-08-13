@@ -10,6 +10,18 @@ public class InstructionList {
 	public ArrayList<Instruction> list;
 	private Instruction temporaryInstruction;
 	
+	public ArrayList<Instruction> getList() {
+		return list;
+	}
+	public void setList(Instruction lista) {
+		this.list.add(lista);
+	}
+	public Instruction getTemporaryInstruction() {
+		return temporaryInstruction;
+	}
+	public void setTemporaryInstruction(Instruction temporaryInstruction) {
+		this.temporaryInstruction = temporaryInstruction;
+	}
 	public InstructionList(String fileName) {
 		list = new ArrayList<Instruction>();
 		try {
@@ -40,22 +52,21 @@ public class InstructionList {
 			
 			String instructionNameArgument[] = separatedInstructions[i].split(" ");
 			
-			temporaryInstruction.instructionName = instructionNameArgument[0];
+			temporaryInstruction.setInstructionName(instructionNameArgument[0]);
 			
-			if (instructionNameArgument.length > 1) {
-				String instructionArguments[] = instructionNameArgument[1].split(",");
-				
-				temporaryInstruction.argument1 = instructionArguments[0];
+			if (instructionNameArgument.length > 1) {		
+				temporaryInstruction.setArgument1(instructionNameArgument[1]);
 			
-				
-				if (instructionArguments.length > 1) {
-					temporaryInstruction.argument2 = instructionArguments[1];
+				if (instructionNameArgument.length > 2) {
+					temporaryInstruction.setArgument1(instructionNameArgument[2]);
 				} else {
-					temporaryInstruction.argument2 = null;
+					temporaryInstruction.setArgument2(null);
 				}
+			}else {
+				temporaryInstruction.setArgument1(null);
 			}
 			
-			list.add(temporaryInstruction);
+			this.setList(temporaryInstruction);
 		}
 	}
 	
