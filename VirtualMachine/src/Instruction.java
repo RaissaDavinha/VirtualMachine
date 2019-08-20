@@ -1,8 +1,8 @@
 
 public class Instruction {
 	public String instructionName;
-	public String argument1;
-	public String argument2;
+	public int argument1;
+	public int argument2;
 	
 	public String getInstructionName() {
 		return instructionName;
@@ -10,17 +10,19 @@ public class Instruction {
 	public void setInstructionName(String instructionName) {
 		this.instructionName = instructionName;
 	}
-	public String getArgument1() {
+	public int getArgument1() {
 		return argument1;
 	}
 	public void setArgument1(String argument1) {
-		this.argument1 = argument1;
+		int aux = Integer.parseInt(argument1);
+		this.argument1 = aux;
 	}
-	public String getArgument2() {
+	public int getArgument2() {
 		return argument2;
 	}
 	public void setArgument2(String argument2) {
-		this.argument2 = argument2;
+		int aux = Integer.parseInt(argument2);
+		this.argument2 = aux;
 	}
 	
 	public void readInstruction() {
