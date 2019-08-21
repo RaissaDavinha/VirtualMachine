@@ -152,11 +152,12 @@ public class VirtualMachine {
 		case "START":
 			stackPointer = -1;
 			break;
-		case "HILT":
+		case "HLT":
 			System.exit(0);
 			break;
 		case "STR":
-			dataStack.push(instruction.argument1);
+			auxRegister = dataStack.get(instruction.argument1);
+			dataStack.push(auxRegister);
 			stackPointer++;
 			break;
 		case "JMP":
@@ -174,16 +175,24 @@ public class VirtualMachine {
 			
 			break;
 		case "RD":
-			
+//			Pegar dado do usuario
 			break;
 		case "PRN":
-			
+//			printar um resultado
 			break;
 		case "ALLOC":
-			
+			for (int k = 0; k < (instruction.argument2 - 1); k++) {
+				stackPointer++;
+				auxRegister = dataStack.get(instruction.argument1 + k);
+				dataStack.push(auxRegister);
+			}
 			break;
 		case "DALLOC":
-			
+			for (int k = (instruction.argument2 - 1); k <  1; k--) {
+				dataStack.set((instruction.argument1 + k), dataStack.get(stackPointer));
+				dataStack.pop();
+				stackPointer--;
+			}
 			break;
 		case "CALL":
 			

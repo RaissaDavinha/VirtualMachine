@@ -16,12 +16,6 @@ public class InstructionList {
 	public void setList(Instruction lista) {
 		this.list.add(lista);
 	}
-	public Instruction getTemporaryInstruction() {
-		return temporaryInstruction;
-	}
-	public void setTemporaryInstruction(Instruction temporaryInstruction) {
-		this.temporaryInstruction = temporaryInstruction;
-	}
 	public InstructionList(String fileName) {
 		list = new ArrayList<Instruction>();
 		try {
