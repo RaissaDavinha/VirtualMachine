@@ -18,6 +18,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTable;
 
+@SuppressWarnings("unused")
 public class window extends JFrame {
 
 	private JPanel contentPane;
@@ -127,7 +128,7 @@ public class window extends JFrame {
 		contentPane.add(jumpButton);
 		
 		JButton continueButton = new JButton("Continue");
-		continueButton.setBounds(213, 537, 89, 23);
+		continueButton.setBounds(203, 537, 99, 23);
 		contentPane.add(continueButton);
 	}
 }
