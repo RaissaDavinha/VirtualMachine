@@ -74,7 +74,20 @@ public class Window extends JFrame {
 		contentPane.add(lblInstrues);
 		
 		DefaultTableModel model = new DefaultTableModel();
-		JTable instructionsTable = new JTable(model);
+		JTable instructionsTable = new JTable(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"Linha", "Instrução", "Atributo 1", "Atributo 2", "Comentário"
+			}
+		) {
+			Class[] columnTypes = new Class[] {
+				Integer.class, String.class, Integer.class, Integer.class, String.class
+			};
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+		});
 		instructionsTable.setBorder(new LineBorder(new Color(0, 0, 0)));
 		instructionsTable.setBounds(10, 22, 446, 162);
 		
