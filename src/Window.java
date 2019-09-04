@@ -37,7 +37,9 @@ public class Window extends JFrame {
 	private JTable instructionsTable;
 	private JTable pilhaTable;
 	private JTextField breakField;
-
+	private InstructionList instructions;
+	private String local = "‎⁨/Users/pedro/Desktop/object.txt";
+	
 	/**
 	 * Launch the application.
 	 */
@@ -195,7 +197,7 @@ public class Window extends JFrame {
 		lblInstrues.setLabelFor(this);
 
 //		InstructionList instructions = new InstructionList("D:\\Workspace\\VirtualMachine-dev\\VirtualMachine\\object.txt");
-		InstructionList instructions = new InstructionList("‎⁨/Users/pedro/Desktop/object.txt");
+		instructions = new InstructionList(local);
 		for (Instruction list : instructions.list) {
 			int count = 1;
 			System.out.println(list.instructionName + " " + list.argument1 + " " + list.argument2);
@@ -211,28 +213,37 @@ public class Window extends JFrame {
 	
 	private class botaoJUMP implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
-		//acoes
+			//acoes
 			
 		}	
 	}
 	
 	private class botaoCONTINUE implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
-		//acoes
+			//continuar execucao apos breakpoint
 			
 		}
 	}
 	
 	private class botaoSTART implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
-		//acoes
+			//inciar um loop
+			//nao pode travar a interface
+			//trhead separada para o loop(?)
+			//contador no loop para representar as linhas
+			//se contador for igual a um dos breakpoints, parar
+			VirtualMachine machine = new VirtualMachine();
+			for (Instruction list : instructions.list) {
+				machine.execInstruction(list);
+			}
+
 			
 		}
 	}
 	
 	private class botaoSTOP implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
-		//acoes
+			//parar looping
 			
 		}
 	}
