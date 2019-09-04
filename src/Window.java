@@ -150,16 +150,15 @@ public class Window extends JFrame {
 		lblBreakPoint.setBounds(361, 368, 99, 25);
 		contentPane.add(lblBreakPoint);
 
-		JButton jumpButton = new JButton("Jump");
-		jumpButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
-
 		JTextArea breakArea = new JTextArea();
 		breakArea.setBounds(361, 392, 99, 110);
 		contentPane.add(breakArea);
 
+		//Jump button
+		JButton jumpButton = new JButton("Jump");
+		botaoJUMP botaoJump = new botaoJUMP();
+		jumpButton.addActionListener(botaoJump);
+		
 		breakField = new JTextField();
 		breakField.setBounds(361, 498, 99, 28);
 		contentPane.add(breakField);
@@ -167,17 +166,26 @@ public class Window extends JFrame {
 		jumpButton.setBounds(350, 537, 89, 23);
 		contentPane.add(jumpButton);
 
+		//Continue button
 		JButton continueButton = new JButton("Continue");
 		continueButton.setBounds(203, 537, 99, 23);
 		contentPane.add(continueButton);
+		botaoCONTINUE botaoContinue = new botaoCONTINUE();
+		continueButton.addActionListener(botaoContinue);
 
+		//Start button
 		JButton btnStart = new JButton("Start");
 		btnStart.setBounds(6, 535, 75, 29);
 		contentPane.add(btnStart);
+		botaoSTART botaoStart = new botaoSTART();
+		btnStart.addActionListener(botaoStart);
 
+		//Stop button
 		JButton btnStop = new JButton("Stop");
 		btnStop.setBounds(93, 534, 75, 29);
 		contentPane.add(btnStop);
+		botaoSTOP botaoStop = new botaoSTOP();
+		btnStop.addActionListener(botaoStop);
 
 		JLabel lblInstrues = new JLabel("Instru\u00E7\u00F5es");
 		lblInstrues.setBounds(0, 0, 396, 21);
@@ -199,5 +207,33 @@ public class Window extends JFrame {
 		}
 
 		String aux = new String();
+	}
+	
+	private class botaoJUMP implements ActionListener {
+		public void actionPerformed(ActionEvent arg0) {
+		//acoes
+			
+		}	
+	}
+	
+	private class botaoCONTINUE implements ActionListener {
+		public void actionPerformed(ActionEvent arg0) {
+		//acoes
+			
+		}
+	}
+	
+	private class botaoSTART implements ActionListener {
+		public void actionPerformed(ActionEvent arg0) {
+		//acoes
+			
+		}
+	}
+	
+	private class botaoSTOP implements ActionListener {
+		public void actionPerformed(ActionEvent arg0) {
+		//acoes
+			
+		}
 	}
 }
