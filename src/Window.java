@@ -37,10 +37,11 @@ public class Window extends JFrame {
 	private JTextField inputField;
 	private JTable instructionsTable;
 	private JTextField breakField;
-	private InstructionList instructions;
-	private String local = "‎⁨/Users/pedro/Desktop/object.txt";
+	String path = "object.txt";
 	private JTable stackTable;
-	VirtualMachine machine = new VirtualMachine();
+	InstructionList instructions;
+	VirtualMachine machine = new VirtualMachine(path);
+	
 	
 	//Launch the application.
 	public static void main(String[] args) {
@@ -68,7 +69,7 @@ public class Window extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 
-		//==== Instrucoes ====
+		/*==== Instrucoes ====*/
 		JScrollPane scroll = new JScrollPane();
 		contentPane.setLayout(null);
 
@@ -76,10 +77,8 @@ public class Window extends JFrame {
 		scrollPane_1.setBounds(10, 22, 446, 318);
 		contentPane.add(scrollPane_1);
 		@SuppressWarnings({ "unchecked", "rawtypes"})
-		JTable instructionsTable_1 = new JTable(new DefaultTableModel(new Object[][] {},
-				new String[] { "Linha", "Instrução", "Atributo 1", "Atributo 2", "Comentário" }) {
-			Class[] columnTypes = new Class[] { Integer.class, String.class, Integer.class, Integer.class,
-					String.class };
+		JTable instructionsTable_1 = new JTable(new DefaultTableModel(new Object[][] {}, new String[] { "Linha", "Label", "Instrução", "Atributo 1", "Atributo 2", "Comentário" }) {
+			Class[] columnTypes = new Class[] { Integer.class, String.class, String.class, String.class, String.class, String.class };
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
@@ -96,14 +95,13 @@ public class Window extends JFrame {
 		lblInstrucoes.setLabelFor(this);
 
 //		InstructionList instructions = new InstructionList("D:\\Workspace\\VirtualMachine-dev\\VirtualMachine\\object.txt");
-		instructions = new InstructionList(local);
+		instructions = machine.getInstructionList();
+		int count = 1;
 		for (Instruction list : instructions.list) {
-			int count = 1;
-			System.out.println(list.instructionName + " " + list.argument1 + " " + list.argument2);
+			System.out.println(list.getLabel() + "" +list.getInstructionName() + " " + list.getArgument1String() + " " + list.getArgument2String());
 			DefaultTableModel model = (DefaultTableModel) instructionsTable_1.getModel();
-			model.addRow(new Object[]{count, list.instructionName, list.argument1, list.argument2, "NUll"});
+			model.addRow(new Object[]{count, list.getLabel(), list.getInstructionName(), list.getArgument1String(), list.getArgument2String(), "NUll"});
 			count++;
-//			list.readInstruction();
 		}
 
 		//===== Pilha =====

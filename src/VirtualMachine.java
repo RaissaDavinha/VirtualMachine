@@ -1,26 +1,76 @@
+import java.util.ArrayList;
 import java.util.Stack;
 
 public class VirtualMachine {
-	Stack<Integer> dataStack = new Stack<Integer>();
-	InstructionList instructions = new InstructionList("D:\\Workspace\\VirtualMachine-dev\\VirtualMachine\\object.txt");
-	int programCounter = 0;
-	int stackPointer = 0;
-	int auxRegister = 0;
+	Stack<Integer> dataStack;
+	InstructionList instructions;
+	public ArrayList<Integer> breakPoints;
 	
+	int programCounter;
+	int stackPointer;
+	int auxRegister;
+	boolean executing;
+	boolean virtualMachineOn;
+	
+	public VirtualMachine(String path) {
+		dataStack = new Stack<Integer>();
+		instructions = new InstructionList(path);
+		breakPoints = new ArrayList<Integer>();
+		
+		for (int i = 0; i < instructions.list.size(); i++) {
+			System.out.println(instructions.list.get(i).getLabel() + " " + instructions.list.get(i).getInstructionName() + " " + instructions.list.get(i).getArgument1String() + " " + instructions.list.get(i).getArgument2String());	
+		}
+		
+		
+		programCounter = 0;
+		stackPointer = 0;
+		auxRegister = 0;
+		executing = true;
+		virtualMachineOn = true;
+	}
+	
+	public InstructionList getInstructionList() {
+		return instructions;
+	}
+	public Stack<Integer> getDataStack() {
+		return dataStack;
+	}
+	
+	public void executeMachine() {
+		while (virtualMachineOn) {
+			
+			if (breakPoints.contains(programCounter)) {
+				executing = false;
+			} else {
+				execInstruction(instructions.getInstruction(programCounter));
+				programCounter++;
+			}
+			
+		}
+		//clean everything
+	}
 	public void execInstruction(Instruction instruction) {
 		
-		switch (instruction.instructionName) {
+		switch (instruction.getInstructionName()) {
 		case "LDC":
+			if(dataStack.size() < stackPointer + 1) {
+				dataStack.push(null);
+			}
 			stackPointer++;
-			dataStack.push(instruction.getArgument1());
+			dataStack.set(stackPointer, instruction.getArgument1Int());
 			break;
 			
 		case "LDV":
+			if(dataStack.size() < stackPointer + 1) {
+				dataStack.push(null);
+			}
 			stackPointer++;
-			dataStack.push(instruction.getArgument1());
+			dataStack.set(stackPointer, dataStack.get(instruction.getArgument1Int()));
 			break;
 			
 		case "ADD":
+			
+			
 			auxRegister = dataStack.get(stackPointer - 1) + dataStack.get(stackPointer);
 			dataStack.pop();
 			dataStack.pop();
@@ -155,16 +205,16 @@ public class VirtualMachine {
 			System.exit(0);
 			break;
 		case "STR":
-			auxRegister = dataStack.get(instruction.argument1);
+			auxRegister = dataStack.get(instruction.getArgument1Int());
 			dataStack.push(auxRegister);
 			stackPointer++;
 			break;
 		case "JMP":
-			programCounter = instruction.argument1;
+			programCounter = instruction.getArgument1Int();
 			break;
 		case "JMPF":
 			if (dataStack.get(stackPointer) == 0) {
-				programCounter = instruction.argument1;
+				programCounter = instruction.getArgument1Int();
 			}else {
 				programCounter++;
 			}
@@ -180,15 +230,18 @@ public class VirtualMachine {
 //			printar um resultado
 			break;
 		case "ALLOC":
-			for (int k = 0; k < (instruction.argument2 - 1); k++) {
+			for (int k = 0; k < (instruction.getArgument2Int() - 1); k++) {
 				stackPointer++;
-				auxRegister = dataStack.get(instruction.argument1 + k);
-				dataStack.push(auxRegister);
+				while (dataStack.size() < instruction.getArgument1Int() + instruction.getArgument2Int()) {
+					dataStack.push(null);
+				}
+				auxRegister = dataStack.get(instruction.getArgument1Int() + k);
+				dataStack.set(stackPointer, auxRegister);
 			}
 			break;
 		case "DALLOC":
-			for (int k = (instruction.argument2 - 1); k <  1; k--) {
-				dataStack.set((instruction.argument1 + k), dataStack.get(stackPointer));
+			for (int k = (instruction.getArgument2Int() - 1); k <  1; k--) {
+				dataStack.set((instruction.getArgument1Int() + k), dataStack.get(stackPointer));
 				dataStack.pop();
 				stackPointer--;
 			}
@@ -203,13 +256,5 @@ public class VirtualMachine {
 		default:
 			break;
 		}
-	}
-
-	public Stack<Integer> getDataStack() {
-		return dataStack;
-	}
-
-	public int getStackPointer() {
-		return stackPointer;
 	}
 }

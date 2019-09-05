@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 public class InstructionList {
 	public ArrayList<Instruction> list;
 	private Instruction temporaryInstruction;
+	private int haveLabel;
 	
 	public ArrayList<Instruction> getList() {
 		return list;
@@ -16,14 +17,58 @@ public class InstructionList {
 	public void setList(Instruction lista) {
 		this.list.add(lista);
 	}
-	public InstructionList(String fileName) {
+	public Instruction getTemporaryInstruction() {
+		return temporaryInstruction;
+	}
+	public Instruction getInstruction(int index) {
+		return list.get(index);
+	}
+	public void setTemporaryInstruction(Instruction temporaryInstruction) {
+		this.temporaryInstruction = temporaryInstruction;
+	}
+	public InstructionList(String path) {
+		haveLabel = 0;
 		list = new ArrayList<Instruction>();
 		try {
-			this.readFile(fileName);
+			this.readFile(path);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error opening file:" + e.getMessage());
 		}
-		
+	}
+	public boolean isInstruction(String field) {
+		switch (field) {
+			case "LDC":
+			case "LDV":
+			case "ADD":
+			case "SUB":
+			case "MULT":
+			case "DIVI":
+			case "INV":
+			case "AND":
+			case "OR":
+			case "NEG":
+			case "CME":
+			case "CMA":
+			case "CEQ":
+			case "CDIF":
+			case "CMEQ":
+			case "CMAQ":
+			case "START":
+			case "HILT":
+			case "STR":
+			case "JMP":
+			case "JMPF":
+			case "NULL":
+			case "RD":
+			case "PRN":
+			case "ALLOC":
+			case "DALLOC":
+			case "CALL":
+			case "RETURN":
+				return true;
+			default:
+				return false;
+			}
 	}
 	public void readFile(String fileName) throws IOException {
 		
@@ -46,18 +91,27 @@ public class InstructionList {
 			
 			String instructionNameArgument[] = separatedInstructions[i].split(" ");
 			
-			temporaryInstruction.setInstructionName(instructionNameArgument[0]);
+			if (isInstruction(instructionNameArgument[0])) {
+				haveLabel = 0;
+				temporaryInstruction.setInstructionName(instructionNameArgument[0 + haveLabel]);
+			} else {
+				temporaryInstruction.setLabel(instructionNameArgument[0]);
+				haveLabel = 1;
+				temporaryInstruction.setInstructionName(instructionNameArgument[0 + haveLabel]);
+			}
 			
-			if (instructionNameArgument.length > 1) {		
-				temporaryInstruction.setArgument1(instructionNameArgument[1]);
 			
-				if (instructionNameArgument.length > 2) {
-					temporaryInstruction.setArgument1(instructionNameArgument[2]);
+			if (instructionNameArgument.length > 1 + haveLabel) {
+				temporaryInstruction.setArgument1String(instructionNameArgument[1 + haveLabel]);
+			
+				if (instructionNameArgument.length > 2 + haveLabel) {
+					temporaryInstruction.setArgument2String(instructionNameArgument[2 + haveLabel]);
 				} else {
-					temporaryInstruction.setArgument2(null);
+					temporaryInstruction.setArgument2String(null);
 				}
 			}else {
-				temporaryInstruction.setArgument1(null);
+				temporaryInstruction.setArgument1String(null);
+				temporaryInstruction.setArgument2String(null);
 			}
 			
 			this.setList(temporaryInstruction);
