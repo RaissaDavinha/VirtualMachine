@@ -134,7 +134,7 @@ public class Window extends JFrame {
 		lblEntrada.setHorizontalAlignment(SwingConstants.CENTER);
 		contentPane.add(lblEntrada);
 
-		JTextArea inputArea = new JTextArea();
+		JTextPane inputArea = new JTextPane();
 		inputArea.setBounds(10, 392, 154, 110);
 		contentPane.add(inputArea);
 
@@ -150,7 +150,7 @@ public class Window extends JFrame {
 		lblSaida.setHorizontalAlignment(SwingConstants.CENTER);
 		contentPane.add(lblSaida);
 
-		JTextArea outputArea = new JTextArea();
+		JTextPane outputArea = new JTextPane();
 		outputArea.setBounds(188, 392, 163, 131);
 		contentPane.add(outputArea);
 
@@ -161,7 +161,7 @@ public class Window extends JFrame {
 		lblBreakPoint.setHorizontalAlignment(SwingConstants.CENTER);
 		contentPane.add(lblBreakPoint);
 
-		JTextArea breakArea = new JTextArea();
+		JTextPane breakArea = new JTextPane();
 		breakArea.setBounds(361, 392, 99, 110);
 		contentPane.add(breakArea);
 		
