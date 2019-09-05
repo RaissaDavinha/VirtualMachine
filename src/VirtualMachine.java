@@ -7,7 +7,6 @@ public class VirtualMachine {
 	int stackPointer = 0;
 	int auxRegister = 0;
 	
-	
 	public void execInstruction(Instruction instruction) {
 		
 		switch (instruction.instructionName) {
@@ -204,5 +203,13 @@ public class VirtualMachine {
 		default:
 			break;
 		}
+	}
+
+	public Stack<Integer> getDataStack() {
+		return dataStack;
+	}
+
+	public int getStackPointer() {
+		return stackPointer;
 	}
 }
