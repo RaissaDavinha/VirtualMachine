@@ -21,6 +21,8 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.util.Stack;
 import java.util.Vector;
@@ -39,8 +41,9 @@ public class Window extends JFrame {
 	private JTextField breakField;
 	String path = "object.txt";
 	private JTable stackTable;
-	InstructionList instructions;
-	VirtualMachine machine = new VirtualMachine(path);
+	private InstructionList instructions;
+	private VirtualMachine machine = new VirtualMachine(path);
+	private int[] breakpoints;
 	
 	
 	//Launch the application.
@@ -169,6 +172,9 @@ public class Window extends JFrame {
 		breakField.setBounds(361, 498, 99, 28);
 		contentPane.add(breakField);
 		breakField.setColumns(10);
+		
+		breakEnter breakEnter = new breakEnter();
+		breakField.addKeyListener(breakEnter);
 
 		//Jump button
 		JButton jumpButton = new JButton("Jump");
@@ -199,7 +205,6 @@ public class Window extends JFrame {
 		btnStop.addActionListener(botaoStop);
 
 		String aux = new String();
-		aux = breakField.getText();
 	}
 	
 	private class botaoJUMP implements ActionListener {
@@ -238,6 +243,44 @@ public class Window extends JFrame {
 		public void actionPerformed(ActionEvent arg0) {
 			//parar looping
 			
+		}
+	}
+	
+/*================= dando erro ao colocar o aux no vetor brekpoints ==========================*/
+	private class breakEnter implements KeyListener {
+		@Override
+		public void keyPressed(KeyEvent arg0) {
+			
+			  if(arg0.getKeyCode() == KeyEvent.VK_ENTER){ 
+				  int aux = Integer.parseInt(breakField.getText()); 
+				  System.out.println(aux);
+				  if(breakpoints != null){
+					  breakpoints[breakpoints.length+1] = aux; //adiciona o valor recebido a lista de breakpoints  
+				  } else {
+					  breakpoints[0] = aux;
+				  }
+				  
+			  }
+			 
+		}
+
+		@Override
+		public void keyReleased(KeyEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void keyTyped(KeyEvent arg0) {
+			JTextField jtf = (JTextField) arg0.getSource();
+			char key = arg0.getKeyChar();
+			boolean press = (key == KeyEvent.VK_ENTER || (arg0.getKeyChar() == KeyEvent.VK_0)|| (arg0.getKeyChar() == KeyEvent.VK_1)|| (arg0.getKeyChar() == KeyEvent.VK_2) 
+		            || (arg0.getKeyChar() == KeyEvent.VK_3)|| (arg0.getKeyChar() == KeyEvent.VK_4)|| (arg0.getKeyChar() == KeyEvent.VK_5)|| (arg0.getKeyChar() == KeyEvent.VK_6)|| (arg0.getKeyChar() == KeyEvent.VK_7)
+		            || (arg0.getKeyChar() == KeyEvent.VK_8)|| (arg0.getKeyChar() == KeyEvent.VK_9));
+			if (!press) {
+				arg0.consume();
+				System.out.println("nao eh numero");
+			}
 		}
 	}
 	
