@@ -43,7 +43,8 @@ public class Window extends JFrame {
 	private JTable stackTable;
 	private InstructionList instructions;
 	private VirtualMachine machine = new VirtualMachine(path);
-	private int[] breakpoints;
+	private int[] breakpoints = new int[5];
+	private int count = 0;
 	
 	
 	//Launch the application.
@@ -254,10 +255,9 @@ public class Window extends JFrame {
 			  if(arg0.getKeyCode() == KeyEvent.VK_ENTER){ 
 				  int aux = Integer.parseInt(breakField.getText()); 
 				  System.out.println(aux);
-				  if(breakpoints != null){
-					  breakpoints[breakpoints.length+1] = aux; //adiciona o valor recebido a lista de breakpoints  
-				  } else {
-					  breakpoints[0] = aux;
+				  if(count < 5){
+					  breakpoints[count] = aux; //adiciona o valor recebido a lista de breakpoints 
+					  count++; 
 				  }
 				  
 			  }
