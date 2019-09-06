@@ -204,8 +204,6 @@ public class Window extends JFrame {
 		contentPane.add(btnStop);
 		botaoSTOP botaoStop = new botaoSTOP();
 		btnStop.addActionListener(botaoStop);
-
-		String aux = new String();
 	}
 	
 	private class botaoJUMP implements ActionListener {
@@ -226,14 +224,20 @@ public class Window extends JFrame {
 		public void actionPerformed(ActionEvent arg0) {
 			//inciar um loop
 			//nao pode travar a interface
-			//Thread separada para o loop(?)
 			//contador no loop para representar as linhas
 			//se contador for igual a um dos breakpoints, parar
 			//transmitir argumentos para serem colocados na pilha
-			
+			int c = 1;
 			for (Instruction list : instructions.list) {
+				for(int i = 0; i < count; i++) {
+					if(c == breakpoints[i]) {
+						//stop
+						//wait botao continue
+					}
+				}
 				machine.execInstruction(list);
 				updateStack();
+				c++;
 			}
 
 			
@@ -247,11 +251,9 @@ public class Window extends JFrame {
 		}
 	}
 	
-/*================= dando erro ao colocar o aux no vetor brekpoints ==========================*/
 	private class breakEnter implements KeyListener {
 		@Override
 		public void keyPressed(KeyEvent arg0) {
-			
 			  if(arg0.getKeyCode() == KeyEvent.VK_ENTER){ 
 				  int aux = Integer.parseInt(breakField.getText()); 
 				  System.out.println(aux);
