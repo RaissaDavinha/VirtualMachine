@@ -49,6 +49,14 @@ public class VirtualMachine {
 		}
 		//clean everything
 	}
+	public ArrayList<Integer> getBreakPoints() {
+		return breakPoints;
+	}
+
+	public void setBreakPoints(ArrayList<Integer> breakPoints) {
+		this.breakPoints = breakPoints;
+	}
+
 	public void execInstruction(Instruction instruction) {
 		
 		switch (instruction.getInstructionName()) {

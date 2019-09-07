@@ -24,6 +24,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
+import java.util.ArrayList;
 import java.util.Stack;
 import java.util.Vector;
 import java.awt.event.ActionEvent;
@@ -39,13 +40,12 @@ public class Window extends JFrame {
 	private JTextField inputField;
 	private JTable instructionsTable;
 	private JTextField breakField;
+	private JTable breakArea;
 	String path = "object.txt";
 	private JTable stackTable;
 	private InstructionList instructions;
 	private VirtualMachine machine = new VirtualMachine(path);
-	private int[] breakpoints = new int[5];
-	private int count = 0;
-	
+	private ArrayList<Integer> breakPoints = new ArrayList<Integer>();
 	
 	//Launch the application.
 	public static void main(String[] args) {
@@ -165,7 +165,7 @@ public class Window extends JFrame {
 		lblBreakPoint.setHorizontalAlignment(SwingConstants.CENTER);
 		contentPane.add(lblBreakPoint);
 
-		JTextPane breakArea = new JTextPane();
+		breakArea = new JTable();
 		breakArea.setBounds(361, 392, 99, 110);
 		contentPane.add(breakArea);
 		
@@ -227,20 +227,10 @@ public class Window extends JFrame {
 			//contador no loop para representar as linhas
 			//se contador for igual a um dos breakpoints, parar
 			//transmitir argumentos para serem colocados na pilha
-			int c = 1;
 			for (Instruction list : instructions.list) {
-				for(int i = 0; i < count; i++) {
-					if(c == breakpoints[i]) {
-						//stop
-						//wait botao continue
-					}
-				}
 				machine.execInstruction(list);
 				updateStack();
-				c++;
 			}
-
-			
 		}
 	}
 	
@@ -254,16 +244,17 @@ public class Window extends JFrame {
 	private class breakEnter implements KeyListener {
 		@Override
 		public void keyPressed(KeyEvent arg0) {
-			  if(arg0.getKeyCode() == KeyEvent.VK_ENTER){ 
-				  int aux = Integer.parseInt(breakField.getText()); 
-				  System.out.println(aux);
-				  if(count < 5){
-					  breakpoints[count] = aux; //adiciona o valor recebido a lista de breakpoints 
-					  count++; 
-				  }
-				  
-			  }
-			 
+			if(arg0.getKeyCode() == KeyEvent.VK_ENTER){ 
+				int aux = Integer.parseInt(breakField.getText()); 
+				System.out.println(aux);
+				breakPoints.add(aux); //adiciona o valor recebido a lista de breakpoints
+				DefaultTableModel model = (DefaultTableModel) breakArea.getModel();
+				//remover lista inteira para poder atualizar ela inteira
+				for(int i : breakPoints) {
+					System.out.println(breakPoints.get(i));
+					model.addRow(new Object[]{breakPoints.get(i)});
+				}
+			} 
 		}
 
 		@Override
@@ -288,9 +279,10 @@ public class Window extends JFrame {
 	
 	private void updateStack() {
 		Stack<Integer> dataStack = machine.getDataStack();
+		DefaultTableModel model = (DefaultTableModel) stackTable.getModel();
+		//remover lista inteira para poder atualizar ela inteira
 		for(Integer i: dataStack) {
 			System.out.println(dataStack.get(i));
-			DefaultTableModel model = (DefaultTableModel) stackTable.getModel();
 			model.addRow(new Object[]{dataStack.get(i)});
 		}
 	}
