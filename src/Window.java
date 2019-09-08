@@ -247,9 +247,9 @@ public class Window extends JFrame {
 			if(arg0.getKeyCode() == KeyEvent.VK_ENTER){ 
 				int aux = Integer.parseInt(breakField.getText()); 
 				System.out.println(aux);
-				breakPoints.add(aux); //adiciona o valor recebido a lista de breakpoints
+				breakPoints.add(aux); 					//adiciona o valor recebido a lista de breakpoints
 				DefaultTableModel model = (DefaultTableModel) breakArea.getModel();
-				//remover lista inteira para poder atualizar ela inteira
+				model.setRowCount(0);
 				for(int i : breakPoints) {
 					System.out.println(breakPoints.get(i));
 					model.addRow(new Object[]{breakPoints.get(i)});
@@ -280,7 +280,7 @@ public class Window extends JFrame {
 	private void updateStack() {
 		Stack<Integer> dataStack = machine.getDataStack();
 		DefaultTableModel model = (DefaultTableModel) stackTable.getModel();
-		//remover lista inteira para poder atualizar ela inteira
+		model.setRowCount(0);
 		for(Integer i: dataStack) {
 			System.out.println(dataStack.get(i));
 			model.addRow(new Object[]{dataStack.get(i)});

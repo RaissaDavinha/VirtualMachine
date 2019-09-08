@@ -2,15 +2,14 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 public class VirtualMachine {
-	Stack<Integer> dataStack;
-	InstructionList instructions;
-	public ArrayList<Integer> breakPoints;
-	
-	int programCounter;
-	int stackPointer;
-	int auxRegister;
-	boolean executing;
-	boolean virtualMachineOn;
+	private Stack<Integer> dataStack;
+	private InstructionList instructions;
+	private ArrayList<Integer> breakPoints;
+	private int programCounter;
+	private int stackPointer;
+	private int auxRegister;
+	private boolean executing;
+	private boolean virtualMachineOn;
 	
 	public VirtualMachine(String path) {
 		dataStack = new Stack<Integer>();
@@ -20,7 +19,6 @@ public class VirtualMachine {
 		for (int i = 0; i < instructions.list.size(); i++) {
 			System.out.println(instructions.list.get(i).getLabel() + " " + instructions.list.get(i).getInstructionName() + " " + instructions.list.get(i).getArgument1String() + " " + instructions.list.get(i).getArgument2String());	
 		}
-		
 		
 		programCounter = 0;
 		stackPointer = 0;
