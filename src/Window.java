@@ -46,6 +46,9 @@ public class Window extends JFrame {
 	private InstructionList instructions;
 	private VirtualMachine machine = new VirtualMachine(path);
 	private ArrayList<Integer> breakPoints = new ArrayList<Integer>();
+	private JTable outputTable;
+	private JTable inputTable;
+	private String argumento;
 	
 	//Launch the application.
 	public static void main(String[] args) {
@@ -131,39 +134,39 @@ public class Window extends JFrame {
 		});
 		scrollStack.setViewportView(stackTable);
 		
-		//==== Entrada de dados ====
-		JLabel lblEntrada = new JLabel("Entrada");
-		lblEntrada.setBounds(21, 368, 129, 25);
-		lblEntrada.setFont(new Font("Tahoma", Font.BOLD, 11));
-		lblEntrada.setHorizontalAlignment(SwingConstants.CENTER);
-		contentPane.add(lblEntrada);
-
-		JTextPane inputArea = new JTextPane();
-		inputArea.setBounds(10, 392, 154, 110);
-		contentPane.add(inputArea);
+		JScrollPane scrollPane_input = new JScrollPane();
+		scrollPane_input.setBounds(12, 368, 156, 134);
+		contentPane.add(scrollPane_input);
+		
+		//==== Input ====
+		inputTable = new JTable();
+		inputTable.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"Entrada"
+			}
+		) {
+			Class[] columnTypes = new Class[] {
+				String.class
+			};
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+		});
+		scrollPane_input.setViewportView(inputTable);
 
 		inputField = new JTextField();
-		inputField.setBounds(10, 499, 158, 25);
+		inputField.setBounds(12, 499, 156, 25);
 		contentPane.add(inputField);
 		inputField.setColumns(1);
 		
 		inputEnter inputEnter = new inputEnter();
 		inputField.addKeyListener(inputEnter);
-
-		//==== Saida de dados ====
-		JLabel lblSaida = new JLabel("Sa\u00EDda");
-		lblSaida.setBounds(203, 368, 129, 25);
-		lblSaida.setFont(new Font("Tahoma", Font.BOLD, 11));
-		lblSaida.setHorizontalAlignment(SwingConstants.CENTER);
-		contentPane.add(lblSaida);
-
-		JTextPane outputArea = new JTextPane();
-		outputArea.setBounds(188, 392, 163, 131);
-		contentPane.add(outputArea);
 		
 		//==== BreakPoints ====
 		JScrollPane scrollPane_breakPoint = new JScrollPane();
-		scrollPane_breakPoint.setBounds(363, 371, 93, 131);
+		scrollPane_breakPoint.setBounds(337, 368, 119, 134);
 		contentPane.add(scrollPane_breakPoint);
 
 		breakArea = new JTable();
@@ -184,12 +187,34 @@ public class Window extends JFrame {
 		scrollPane_breakPoint.setViewportView(breakArea);
 		
 		breakField = new JTextField();
-		breakField.setBounds(363, 498, 93, 28);
+		breakField.setBounds(337, 498, 119, 28);
 		contentPane.add(breakField);
 		breakField.setColumns(10);
 		
 		breakEnter breakEnter = new breakEnter();
 		breakField.addKeyListener(breakEnter);
+		
+		//==== Output =====
+		JScrollPane scrollPane_output = new JScrollPane();
+		scrollPane_output.setBounds(180, 368, 145, 152);
+		contentPane.add(scrollPane_output);
+		
+		outputTable = new JTable();
+		outputTable.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"Sa\u00EDda"
+			}
+		) {
+			Class[] columnTypes = new Class[] {
+				String.class
+			};
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+		});
+		scrollPane_output.setViewportView(outputTable);
 
 		//Jump button
 		JButton jumpButton = new JButton("Jump");
@@ -234,6 +259,7 @@ public class Window extends JFrame {
 		}	
 	}
 	
+	//Limpa lista de breakPoints 
 	private class botaoCLEARBP implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
 			DefaultTableModel model = (DefaultTableModel) breakArea.getModel();
@@ -241,6 +267,7 @@ public class Window extends JFrame {
 		}	
 	}
 	
+	//Limpa pilha de dados
 	private class botaoCLEARDATA implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
 			DefaultTableModel model = (DefaultTableModel) stackTable.getModel();
@@ -266,6 +293,7 @@ public class Window extends JFrame {
 		}
 	}
 	
+	//==== recebe um breakpoint ao ser clicado o enter e salva em um arrayList ====
 	private class breakEnter implements KeyListener {
 		@Override
 		public void keyPressed(KeyEvent arg0) {
@@ -314,11 +342,15 @@ public class Window extends JFrame {
 		repaint();
 	}
 	
+	//==== recebe input ao ser clicado o enter e salva em uma variável ====
 	private class inputEnter implements KeyListener {
 		@Override
 		public void keyPressed(KeyEvent arg0) {
 			if(arg0.getKeyCode() == KeyEvent.VK_ENTER){ 
-				
+				argumento = inputField.getText();
+				DefaultTableModel model = (DefaultTableModel) inputTable.getModel();
+				model.addRow(new Object[]{argumento});
+				repaint();
 			} 
 		}
 		
