@@ -146,6 +146,9 @@ public class Window extends JFrame {
 		inputField.setBounds(10, 499, 158, 25);
 		contentPane.add(inputField);
 		inputField.setColumns(1);
+		
+		inputEnter inputEnter = new inputEnter();
+		inputField.addKeyListener(inputEnter);
 
 		//==== Saida de dados ====
 		JLabel lblSaida = new JLabel("Sa\u00EDda");
@@ -157,20 +160,31 @@ public class Window extends JFrame {
 		JTextPane outputArea = new JTextPane();
 		outputArea.setBounds(188, 392, 163, 131);
 		contentPane.add(outputArea);
-
-		//==== Break Point ====
-		JLabel lblBreakPoint = new JLabel("Break Point");
-		lblBreakPoint.setBounds(361, 368, 99, 25);
-		lblBreakPoint.setFont(new Font("Tahoma", Font.BOLD, 11));
-		lblBreakPoint.setHorizontalAlignment(SwingConstants.CENTER);
-		contentPane.add(lblBreakPoint);
+		
+		//==== BreakPoints ====
+		JScrollPane scrollPane_breakPoint = new JScrollPane();
+		scrollPane_breakPoint.setBounds(363, 371, 93, 131);
+		contentPane.add(scrollPane_breakPoint);
 
 		breakArea = new JTable();
-		breakArea.setBounds(361, 392, 99, 110);
-		contentPane.add(breakArea);
+		breakArea.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"BreakPoints"
+			}
+		) {
+			Class[] columnTypes = new Class[] {
+				Integer.class
+			};
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+		});
+		scrollPane_breakPoint.setViewportView(breakArea);
 		
 		breakField = new JTextField();
-		breakField.setBounds(361, 498, 99, 28);
+		breakField.setBounds(363, 498, 93, 28);
 		contentPane.add(breakField);
 		breakField.setColumns(10);
 		
@@ -179,31 +193,38 @@ public class Window extends JFrame {
 
 		//Jump button
 		JButton jumpButton = new JButton("Jump");
-		jumpButton.setBounds(350, 537, 89, 23);
+		jumpButton.setBounds(236, 535, 89, 30);
 		contentPane.add(jumpButton);
 		botaoJUMP botaoJump = new botaoJUMP();
 		jumpButton.addActionListener(botaoJump);
 
-		//Continue button
-		JButton continueButton = new JButton("Continue");
-		continueButton.setBounds(203, 537, 99, 23);
-		contentPane.add(continueButton);
-		botaoCONTINUE botaoContinue = new botaoCONTINUE();
-		continueButton.addActionListener(botaoContinue);
-
 		//Start button
 		JButton btnStart = new JButton("Start");
-		btnStart.setBounds(6, 535, 75, 29);
+		btnStart.setBounds(31, 536, 75, 29);
 		contentPane.add(btnStart);
 		botaoSTART botaoStart = new botaoSTART();
 		btnStart.addActionListener(botaoStart);
 
 		//Stop button
 		JButton btnStop = new JButton("Stop");
-		btnStop.setBounds(93, 534, 75, 29);
+		btnStop.setBounds(135, 536, 75, 29);
 		contentPane.add(btnStop);
 		botaoSTOP botaoStop = new botaoSTOP();
 		btnStop.addActionListener(botaoStop);
+		
+		//Clear BP button
+		JButton btnClearBreakpoint = new JButton("Clear BP");
+		btnClearBreakpoint.setBounds(349, 535, 100, 30);
+		contentPane.add(btnClearBreakpoint);
+		botaoCLEARBP botaoCLEARBP = new botaoCLEARBP();
+		btnClearBreakpoint.addActionListener(botaoCLEARBP);
+		
+		//Clear Data button
+		JButton btnClearData = new JButton("Clear Data");
+		btnClearData.setBounds(468, 535, 114, 30);
+		contentPane.add(btnClearData);
+		botaoCLEARDATA botaoCLEARDATA = new botaoCLEARDATA();
+		btnClearData.addActionListener(botaoCLEARDATA);
 	}
 	
 	private class botaoJUMP implements ActionListener {
@@ -213,20 +234,24 @@ public class Window extends JFrame {
 		}	
 	}
 	
-	private class botaoCONTINUE implements ActionListener {
+	private class botaoCLEARBP implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
-			//continuar execucao apos breakpoint
-			
-		}
+			DefaultTableModel model = (DefaultTableModel) breakArea.getModel();
+			model.setRowCount(0);
+		}	
+	}
+	
+	private class botaoCLEARDATA implements ActionListener {
+		public void actionPerformed(ActionEvent arg0) {
+			DefaultTableModel model = (DefaultTableModel) stackTable.getModel();
+			model.setRowCount(0);
+		}	
 	}
 	
 	private class botaoSTART implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
-			//inciar um loop
-			//nao pode travar a interface
-			//contador no loop para representar as linhas
-			//se contador for igual a um dos breakpoints, parar
-			//transmitir argumentos para serem colocados na pilha
+															//falta transmitir argumentos para serem colocados na pilha
+			machine.setBreakPoints(breakPoints);			//transmite arrayList de breakpoints
 			for (Instruction list : instructions.list) {
 				machine.execInstruction(list);
 				updateStack();
@@ -245,15 +270,16 @@ public class Window extends JFrame {
 		@Override
 		public void keyPressed(KeyEvent arg0) {
 			if(arg0.getKeyCode() == KeyEvent.VK_ENTER){ 
-				int aux = Integer.parseInt(breakField.getText()); 
-				System.out.println(aux);
+				int aux = Integer.parseInt(breakField.getText());
 				breakPoints.add(aux); 					//adiciona o valor recebido a lista de breakpoints
+				System.out.println(aux + " adicionado");
 				DefaultTableModel model = (DefaultTableModel) breakArea.getModel();
 				model.setRowCount(0);
-				for(int i : breakPoints) {
+				for(int i = 0; i < breakPoints.size(); i++) {
 					System.out.println(breakPoints.get(i));
 					model.addRow(new Object[]{breakPoints.get(i)});
 				}
+				repaint();
 			} 
 		}
 
@@ -284,6 +310,27 @@ public class Window extends JFrame {
 		for(Integer i: dataStack) {
 			System.out.println(dataStack.get(i));
 			model.addRow(new Object[]{dataStack.get(i)});
+		}
+		repaint();
+	}
+	
+	private class inputEnter implements KeyListener {
+		@Override
+		public void keyPressed(KeyEvent arg0) {
+			if(arg0.getKeyCode() == KeyEvent.VK_ENTER){ 
+				
+			} 
+		}
+		
+		@Override
+		public void keyReleased(KeyEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void keyTyped(KeyEvent arg0) {
+			
 		}
 	}
 }
