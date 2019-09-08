@@ -2,14 +2,17 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 public class VirtualMachine {
-	private Stack<Integer> dataStack;
-	private InstructionList instructions;
-	private ArrayList<Integer> breakPoints;
-	private int programCounter;
-	private int stackPointer;
-	private int auxRegister;
+	Stack<Integer> dataStack;
+	InstructionList instructions;
+	public ArrayList<Integer> breakPoints;
+	private int readValue;
+	private int printValue;
+	
+	int programCounter;
+	int stackPointer;
+	int auxRegister;
 	private boolean executing;
-	private boolean virtualMachineOn;
+	boolean virtualMachineOn;
 	
 	public VirtualMachine(String path) {
 		dataStack = new Stack<Integer>();
@@ -20,33 +23,61 @@ public class VirtualMachine {
 			System.out.println(instructions.list.get(i).getLabel() + " " + instructions.list.get(i).getInstructionName() + " " + instructions.list.get(i).getArgument1String() + " " + instructions.list.get(i).getArgument2String());	
 		}
 		
+		
 		programCounter = 0;
 		stackPointer = 0;
 		auxRegister = 0;
 		executing = true;
 		virtualMachineOn = true;
 	}
-	
+	public void setReadValue(int readValue) {
+		this.readValue = readValue;
+	}
+	public int getPrintValue() {
+		return this.printValue;
+	}
+	public boolean getExecuting() {
+		return executing;
+	}
+	public void setExecutingTrue() {
+		executing = true;
+	}
+	public void setExecutingFalse() {
+		executing = false;
+	}
+	public boolean isBreakLine() {
+		return breakPoints.contains(programCounter);
+	}
 	public InstructionList getInstructionList() {
 		return instructions;
 	}
 	public Stack<Integer> getDataStack() {
 		return dataStack;
 	}
-	
-	public void executeMachine() {
-		while (virtualMachineOn) {
-			
-			if (breakPoints.contains(programCounter)) {
-				executing = false;
-			} else {
-				execInstruction(instructions.getInstruction(programCounter));
-				programCounter++;
-			}
-			
+	public boolean isReadInstruction() {
+		if (instructions.getInstruction(programCounter).getInstructionName() == "RD") {
+			return true;
+		} else {
+			return false;
 		}
-		//clean everything
 	}
+	public boolean isPrintInstruction() {
+		if (instructions.getInstruction(programCounter).getInstructionName() == "PRN") {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	public void executeMachine() {
+		if (executing == true) {
+			execInstruction(instructions.getInstruction(programCounter));
+			programCounter++;
+		} else {
+			executing = false;
+		}
+	}
+		//clean everything
+	
 	public ArrayList<Integer> getBreakPoints() {
 		return breakPoints;
 	}

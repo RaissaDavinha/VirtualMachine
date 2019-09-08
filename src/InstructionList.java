@@ -10,6 +10,7 @@ public class InstructionList {
 	public ArrayList<Instruction> list;
 	private Instruction temporaryInstruction;
 	private int haveLabel;
+	private int i;
 	
 	public ArrayList<Instruction> getList() {
 		return list;
@@ -32,7 +33,7 @@ public class InstructionList {
 		try {
 			this.readFile(path);
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Error opening file:" + e.getMessage());
+			JOptionPane.showMessageDialog(null,"Error opening file:" + e.getMessage());
 		}
 	}
 	public boolean isInstruction(String field) {
@@ -54,7 +55,7 @@ public class InstructionList {
 			case "CMEQ":
 			case "CMAQ":
 			case "START":
-			case "HILT":
+			case "HLT":
 			case "STR":
 			case "JMP":
 			case "JMPF":
@@ -86,7 +87,7 @@ public class InstructionList {
 		fileReader.close();
 
 		String separatedInstructions[] = fileReturn.split("\n");
-		for (int i = 0; i < separatedInstructions.length; i++) {
+		for (i = 0; i < separatedInstructions.length; i++) {
 			temporaryInstruction = new Instruction();
 			
 			String instructionNameArgument[] = separatedInstructions[i].split(" ");
