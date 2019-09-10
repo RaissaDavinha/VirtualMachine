@@ -47,6 +47,9 @@ public class Window extends JFrame {
 	private InstructionList instructions;
 	private VirtualMachine machine = new VirtualMachine(path);
 	private ArrayList<Integer> breakPoints = new ArrayList<Integer>();
+	private JTable outputTable;
+	private JTable inputTable;
+	private String argumento;
 	
 	//Launch the application.
 	public static void main(String[] args) {
@@ -115,7 +118,7 @@ public class Window extends JFrame {
 		lblPilha.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblPilha.setHorizontalAlignment(SwingConstants.CENTER);
 		contentPane.add(lblPilha);
-		
+			
 		JScrollPane scrollStack = new JScrollPane();
 		scrollStack.setBounds(468, 22, 161, 501);
 		contentPane.add(scrollStack);
@@ -131,80 +134,123 @@ public class Window extends JFrame {
 			}
 		});
 		scrollStack.setViewportView(stackTable);
+				
+		JScrollPane scrollPane_input = new JScrollPane();
+		scrollPane_input.setBounds(12, 368, 156, 134);
+		contentPane.add(scrollPane_input);
 		
-		//==== Entrada de dados ====
-		JLabel lblEntrada = new JLabel("Entrada");
-		lblEntrada.setBounds(21, 368, 129, 25);
-		lblEntrada.setFont(new Font("Tahoma", Font.BOLD, 11));
-		lblEntrada.setHorizontalAlignment(SwingConstants.CENTER);
-		contentPane.add(lblEntrada);
-
-		JTextPane inputArea = new JTextPane();
-		inputArea.setBounds(10, 392, 154, 110);
-		contentPane.add(inputArea);
+		//==== Input ====
+		inputTable = new JTable();
+		inputTable.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"Entrada"
+			}
+		) {
+			Class[] columnTypes = new Class[] {
+				String.class
+			};
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+		});
+		scrollPane_input.setViewportView(inputTable);
 
 		inputField = new JTextField();
-		inputField.setBounds(10, 499, 158, 25);
+		inputField.setBounds(12, 499, 156, 25);
 		contentPane.add(inputField);
 		inputField.setColumns(1);
-
-		//==== Saida de dados ====
-		JLabel lblSaida = new JLabel("Sa\u00EDda");
-		lblSaida.setBounds(203, 368, 129, 25);
-		lblSaida.setFont(new Font("Tahoma", Font.BOLD, 11));
-		lblSaida.setHorizontalAlignment(SwingConstants.CENTER);
-		contentPane.add(lblSaida);
-
-		JTextPane outputArea = new JTextPane();
-		outputArea.setBounds(188, 392, 163, 131);
-		contentPane.add(outputArea);
-
-		//==== Break Point ====
-		JLabel lblBreakPoint = new JLabel("Break Point");
-		lblBreakPoint.setBounds(361, 368, 99, 25);
-		lblBreakPoint.setFont(new Font("Tahoma", Font.BOLD, 11));
-		lblBreakPoint.setHorizontalAlignment(SwingConstants.CENTER);
-		contentPane.add(lblBreakPoint);
+				
+		inputEnter inputEnter = new inputEnter();
+		inputField.addKeyListener(inputEnter);
+		
+		//==== BreakPoints ====
+		JScrollPane scrollPane_breakPoint = new JScrollPane();
+		scrollPane_breakPoint.setBounds(337, 368, 119, 134);
+		contentPane.add(scrollPane_breakPoint);
 
 		breakArea = new JTable();
-		breakArea.setBounds(361, 392, 99, 110);
-		contentPane.add(breakArea);
-		
+		breakArea.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"BreakPoints"
+			}
+		) {
+			Class[] columnTypes = new Class[] {
+				Integer.class
+			};
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+		});
+		scrollPane_breakPoint.setViewportView(breakArea);
+				
 		breakField = new JTextField();
-		breakField.setBounds(361, 498, 99, 28);
+		breakField.setBounds(337, 498, 119, 28);
 		contentPane.add(breakField);
 		breakField.setColumns(10);
 		
 		breakEnter breakEnter = new breakEnter();
 		breakField.addKeyListener(breakEnter);
+		
+		//==== Output =====
+		JScrollPane scrollPane_output = new JScrollPane();
+		scrollPane_output.setBounds(180, 368, 145, 152);
+		contentPane.add(scrollPane_output);
+		
+		outputTable = new JTable();
+		outputTable.setModel(new DefaultTableModel(
+		new Object[][] {
+			},
+			new String[] {
+				"Sa\u00EDda"
+			}
+		) {
+			Class[] columnTypes = new Class[] {
+				String.class
+			};
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+		});
+		scrollPane_output.setViewportView(outputTable);
 
 		//Jump button
 		JButton jumpButton = new JButton("Jump");
-		jumpButton.setBounds(350, 537, 89, 23);
+		jumpButton.setBounds(236, 535, 89, 30);
 		contentPane.add(jumpButton);
 		botaoJUMP botaoJump = new botaoJUMP();
 		jumpButton.addActionListener(botaoJump);
 
-		//Continue button
-		JButton continueButton = new JButton("Continue");
-		continueButton.setBounds(203, 537, 99, 23);
-		contentPane.add(continueButton);
-		botaoCONTINUE botaoContinue = new botaoCONTINUE();
-		continueButton.addActionListener(botaoContinue);
-
 		//Start button
 		JButton btnStart = new JButton("Start");
-		btnStart.setBounds(6, 535, 75, 29);
+		btnStart.setBounds(31, 536, 75, 29);
 		contentPane.add(btnStart);
 		botaoSTART botaoStart = new botaoSTART();
 		btnStart.addActionListener(botaoStart);
-
+		
 		//Stop button
 		JButton btnStop = new JButton("Stop");
-		btnStop.setBounds(93, 534, 75, 29);
+		btnStop.setBounds(135, 536, 75, 29);
 		contentPane.add(btnStop);
 		botaoSTOP botaoStop = new botaoSTOP();
 		btnStop.addActionListener(botaoStop);
+		
+		//Clear BP button
+		JButton btnClearBreakpoint = new JButton("Clear BP");
+		btnClearBreakpoint.setBounds(349, 535, 100, 30);
+		contentPane.add(btnClearBreakpoint);
+		botaoCLEARBP botaoCLEARBP = new botaoCLEARBP();
+		btnClearBreakpoint.addActionListener(botaoCLEARBP);
+		
+		//Clear Data button
+		JButton btnClearData = new JButton("Clear Data");
+		btnClearData.setBounds(468, 535, 114, 30);
+		contentPane.add(btnClearData);
+		botaoCLEARDATA botaoCLEARDATA = new botaoCLEARDATA();
+		btnClearData.addActionListener(botaoCLEARDATA);
 	}
 	
 	private class botaoJUMP implements ActionListener {
@@ -214,20 +260,24 @@ public class Window extends JFrame {
 		}	
 	}
 	
-	private class botaoCONTINUE implements ActionListener {
-		public void actionPerformed(ActionEvent arg0) {
-			//continuar execucao apos breakpoint
-			
+	//Limpa lista de breakPoints 
+		private class botaoCLEARBP implements ActionListener {
+			public void actionPerformed(ActionEvent arg0) {
+				DefaultTableModel model = (DefaultTableModel) breakArea.getModel();
+				model.setRowCount(0);
+			}	
 		}
-	}
+		
+		//Limpa pilha de dados
+		private class botaoCLEARDATA implements ActionListener {
+			public void actionPerformed(ActionEvent arg0) {
+				DefaultTableModel model = (DefaultTableModel) stackTable.getModel();
+				model.setRowCount(0);
+			}	
+		}
 	
 	private class botaoSTART implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
-			//inciar um loop
-			//nao pode travar a interface
-			//contador no loop para representar as linhas
-			//se contador for igual a um dos breakpoints, parar
-			//transmitir argumentos para serem colocados na pilha
 			machine.setExecutingTrue();
 			while (machine.getExecuting()) {
 				if(machine.isReadInstruction()) {
@@ -256,19 +306,21 @@ public class Window extends JFrame {
 		}
 	}
 	
+	//==== recebe um breakpoint ao ser clicado o enter e salva em um arrayList ====
 	private class breakEnter implements KeyListener {
 		@Override
 		public void keyPressed(KeyEvent arg0) {
 			if(arg0.getKeyCode() == KeyEvent.VK_ENTER){ 
-				int aux = Integer.parseInt(breakField.getText()); 
-				System.out.println(aux);
-				breakPoints.add(aux); //adiciona o valor recebido a lista de breakpoints
+				int aux = Integer.parseInt(breakField.getText());
+				breakPoints.add(aux); 					//adiciona o valor recebido a lista de breakpoints
+				System.out.println(aux + " adicionado");
 				DefaultTableModel model = (DefaultTableModel) breakArea.getModel();
-				//remover lista inteira para poder atualizar ela inteira
-				for(int i : breakPoints) {
+				model.setRowCount(0);
+				for(int i = 0; i < breakPoints.size(); i++) {
 					System.out.println(breakPoints.get(i));
 					model.addRow(new Object[]{breakPoints.get(i)});
 				}
+				repaint();
 			} 
 		}
 
@@ -293,12 +345,37 @@ public class Window extends JFrame {
 	}
 	
 	private void updateStack() {
-		dataStack = machine.getDataStack();
+		Stack<Integer> dataStack = machine.getDataStack();
 		DefaultTableModel model = (DefaultTableModel) stackTable.getModel();
-		//remover lista inteira para poder atualizar ela inteira
+		model.setRowCount(0);
 		for(Integer i: dataStack) {
 			System.out.println(dataStack.get(i));
 			model.addRow(new Object[]{dataStack.get(i)});
+		}
+		repaint();
+	}
+	
+	//==== recebe input ao ser clicado o enter e salva em uma variável ====
+	private class inputEnter implements KeyListener {
+		@Override
+		public void keyPressed(KeyEvent arg0) {
+			if(arg0.getKeyCode() == KeyEvent.VK_ENTER){ 
+				argumento = inputField.getText();
+				DefaultTableModel model = (DefaultTableModel) inputTable.getModel();
+				model.addRow(new Object[]{argumento});
+				repaint();
+			} 
+		}
+		
+		@Override
+		public void keyReleased(KeyEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void keyTyped(KeyEvent arg0) {
+			
 		}
 	}
 }
