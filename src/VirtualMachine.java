@@ -26,8 +26,8 @@ public class VirtualMachine {
 		instructions = new InstructionList(path);
 		breakPoints = new ArrayList<Integer>();
 		
-		for (int i = 0; i < instructions.list.size(); i++) {
-			System.out.println(instructions.list.get(i).getLabel() + " " + instructions.list.get(i).getInstructionName() + " " + instructions.list.get(i).getArgument1String() + " " + instructions.list.get(i).getArgument2String());	
+		for (int i = 0; i < instructions.getList().size(); i++) {
+			System.out.println(instructions.getList().get(i).getLabel() + " " + instructions.getList().get(i).getInstructionName() + " " + instructions.getList().get(i).getArgument1String() + " " + instructions.getList().get(i).getArgument2String());	
 		}
 		
 		
@@ -37,8 +37,19 @@ public class VirtualMachine {
 		executing = true;
 		virtualMachineOn = true;
 	}
-	public void setReadValue(int readValue) {
-		this.readValue = readValue;
+	public void virtualMachineReset() {
+		programCounter = 0;
+		stackPointer = 0;
+		auxRegister = 0;
+		executing = true;
+		virtualMachineOn = true;
+		dataStack = new Stack<Integer>();
+	}
+	public int getStackPointer() {
+		return stackPointer;
+	}
+	public int getProgramPointer() {
+		return programCounter;
 	}
 	public int getPrintValue() {
 		return this.printValue;
@@ -46,11 +57,20 @@ public class VirtualMachine {
 	public boolean getExecuting() {
 		return executing;
 	}
+	public boolean getVirtualMachineOn() {
+		return virtualMachineOn;
+	}
 	public void setExecutingTrue() {
 		executing = true;
 	}
 	public void setExecutingFalse() {
 		executing = false;
+	}
+	public void setVirtualMachineOn() {
+		virtualMachineOn = true;
+	}
+	public void setVirtualMachineOff() {
+		virtualMachineOn = false;
 	}
 	public boolean isBreakLine() {
 		return breakPoints.contains(programCounter);
@@ -58,18 +78,14 @@ public class VirtualMachine {
 	public InstructionList getInstructionList() {
 		return instructions;
 	}
+	public Instruction getInstruction() {
+		return instructions.getInstruction(programCounter);
+	}
 	public Stack<Integer> getDataStack() {
 		return dataStack;
 	}
-	public boolean isReadInstruction() {
-		if (instructions.getInstruction(programCounter).getInstructionName() == "RD") {
-			return true;
-		} else {
-			return false;
-		}
-	}
 	public boolean isPrintInstruction() {
-		if (instructions.getInstruction(programCounter).getInstructionName() == "PRN") {
+		if (instructions.getInstruction(programCounter).getInstructionName().equals("PRN")) {
 			return true;
 		} else {
 			return false;
@@ -87,7 +103,7 @@ public class VirtualMachine {
 		this.breakPoints = breakPoints;
 	}
 
-	public void execInstruction() {
+	public void execInstruction() throws Exception {
 		Instruction instruction = instructions.getInstruction(programCounter);
 		switch (instruction.getInstructionName()) {
 		case "LDC":
@@ -284,7 +300,8 @@ public class VirtualMachine {
 			stackPointer = -1;
 			break;
 		case "HLT":
-			System.exit(0);
+			setExecutingFalse();
+			setVirtualMachineOff();
 			break;
 		case "STR":
 //			auxRegister = dataStack.get(instruction.getArgument1Int());
@@ -301,7 +318,7 @@ public class VirtualMachine {
 			break;
 		case "JMP":
 			jumpPos = instruction.getArgument1String();
-			for (Instruction list : instructions.list) {
+			for (Instruction list : instructions.getList()) {
 				if (instruction.getInstructionName() == jumpPos) {
 					stackPointer = count;
 				}
@@ -314,7 +331,7 @@ public class VirtualMachine {
 			if (dataStack.get(stackPointer) == 0) {
 				jumpPos = instruction.getArgument1String();
 				
-				for (Instruction list : instructions.list) {
+				for (Instruction list : instructions.getList()) {
 					if (instruction.getInstructionName() == jumpPos) {
 						stackPointer = count;
 					}
@@ -330,7 +347,7 @@ public class VirtualMachine {
 			break;
 		case "RD":
 			stackPointer++;
-			dataStack.push(readValue);
+			dataStack.push(Integer.parseInt(JOptionPane.showInputDialog(null, "Digite um valor ")));
 			System.out.println("Leitura do dado"+ dataStack.get(stackPointer));
 			break;
 		case "PRN":
@@ -339,7 +356,7 @@ public class VirtualMachine {
 			stackPointer--;
 			break;
 		case "ALLOC":
-			for (int k = 0; k < (instruction.getArgument2Int() - 1); k++) {
+			for (int k = 0; k <= (instruction.getArgument2Int() -1); k++) {
 				stackPointer++;
 //				while (dataStack.size() < instruction.getArgument1Int() + instruction.getArgument2Int()) {
 //					dataStack.push(0);
@@ -355,7 +372,7 @@ public class VirtualMachine {
 			}
 			break;
 		case "DALLOC":
-			for (int k = (instruction.getArgument2Int() - 1); k <  1; k--) {
+			for (int k = (instruction.getArgument2Int() - 1); k >=  0; k--) {
 				dataStack.set((instruction.getArgument1Int() + k), dataStack.get(stackPointer));
 				dataStack.pop();
 				stackPointer--;
@@ -365,7 +382,7 @@ public class VirtualMachine {
 			stackPointer++;
 			stackRecover = stackPointer;
 			jumpPos = instruction.getArgument1String();
-			for (Instruction list : instructions.list) {
+			for (Instruction list : instructions.getList()) {
 				if (instruction.getInstructionName() == jumpPos) {
 					stackPointer = count;
 				}

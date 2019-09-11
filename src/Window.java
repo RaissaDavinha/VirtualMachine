@@ -53,6 +53,7 @@ public class Window extends JFrame {
 	private String argumento;
 	private boolean inputWasInserted = false;
 	private int readValue = 0;
+	private int stackPointer;
 	
 	//Launch the application.
 	public static void main(String[] args) {
@@ -108,8 +109,7 @@ public class Window extends JFrame {
 //		InstructionList instructions = new InstructionList("D:\\Workspace\\VirtualMachine-dev\\VirtualMachine\\object.txt");
 		instructions = machine.getInstructionList();
 		int count = 1;
-		for (Instruction list : instructions.list) {
-			System.out.println(list.getLabel() + "" +list.getInstructionName() + " " + list.getArgument1String() + " " + list.getArgument2String());
+		for (Instruction list : instructions.getList()) {
 			DefaultTableModel model = (DefaultTableModel) instructionsTable_1.getModel();
 			model.addRow(new Object[]{count, list.getLabel(), list.getInstructionName(), list.getArgument1String(), list.getArgument2String(), "NUll"});
 			count++;
@@ -238,13 +238,6 @@ public class Window extends JFrame {
 		contentPane.add(btnClearBreakpoint);
 		botaoCLEARBP botaoCLEARBP = new botaoCLEARBP();
 		btnClearBreakpoint.addActionListener(botaoCLEARBP);
-		
-		//Clear Data button
-		JButton btnClearData = new JButton("Clear Data");
-		btnClearData.setBounds(468, 535, 114, 30);
-		contentPane.add(btnClearData);
-		botaoCLEARDATA botaoCLEARDATA = new botaoCLEARDATA();
-		btnClearData.addActionListener(botaoCLEARDATA);
 	}
 	
 	private class botaoJUMP implements ActionListener {
@@ -259,33 +252,30 @@ public class Window extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				DefaultTableModel model = (DefaultTableModel) breakArea.getModel();
 				model.setRowCount(0);
-			}	
-		}
-		
-		//Limpa pilha de dados
-		private class botaoCLEARDATA implements ActionListener {
-			public void actionPerformed(ActionEvent arg0) {
-				DefaultTableModel model = (DefaultTableModel) stackTable.getModel();
-				model.setRowCount(0);
+				breakPoints = new ArrayList<Integer>();
 			}	
 		}
 	
 	private class botaoSTART implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
+			if (machine.getVirtualMachineOn() == false) {
+				
+			}
 			machine.setExecutingTrue();
 			while (machine.getExecuting()) {
-				if(machine.isReadInstruction()) {
-					// wait for input
-					while(inputWasInserted != true)
-					JOptionPane.showMessageDialog(null, inputWasInserted);
-					machine.setReadValue(readValue);
-					inputWasInserted = false;
+				try {
+					machine.execInstruction();
 				}
-				machine.execInstruction();
+				catch (Exception e) {
+					Instruction instruction = machine.getInstruction();
+					JOptionPane.showMessageDialog(null, "Error at instruction: " + machine.getProgramPointer() + " " + instruction.getInstructionName());
+				}
 				if (machine.isPrintInstruction()) {
+					JOptionPane.showMessageDialog(null, "print");
 					int printValue = machine.getPrintValue();
 					// print to field
-					DefaultTableModel model = (DefaultTableModel) breakArea.getModel();
+					DefaultTableModel model = (DefaultTableModel) outputTable.getModel();
+					model.addRow(new Object[]{printValue});
 				}
 				machine.programCounterIncrement();
 				// updateInstructionList();
@@ -312,11 +302,9 @@ public class Window extends JFrame {
 				if(arg0.getKeyCode() == KeyEvent.VK_ENTER){ 
 					int aux = Integer.parseInt(breakField.getText());
 					breakPoints.add(aux); 					//adiciona o valor recebido a lista de breakpoints
-					System.out.println(aux + " adicionado");
 					DefaultTableModel model = (DefaultTableModel) breakArea.getModel();
 					model.setRowCount(0);
 					for(int i = 0; i < breakPoints.size(); i++) {
-						System.out.println(breakPoints.get(i));
 						model.addRow(new Object[]{breakPoints.get(i)});
 					}
 					repaint();
@@ -343,18 +331,19 @@ public class Window extends JFrame {
 		            || (key == KeyEvent.VK_8)|| (key == KeyEvent.VK_9));
 			if (!press) {
 				arg0.consume();
-				System.out.println("nao eh numero");
 			}
 		}
 	}
 	
 	private void updateStack() {
 		Stack<Integer> dataStack = machine.getDataStack();
-		DefaultTableModel model = (DefaultTableModel) stackTable.getModel();
-		model.setRowCount(0);
-		for(Integer i: dataStack) {
-			System.out.println(dataStack.get(i));
-			model.addRow(new Object[]{dataStack.get(i)});
+		stackPointer = machine.getStackPointer();
+		if (stackPointer >= 0) {
+			DefaultTableModel model = (DefaultTableModel) stackTable.getModel();
+			model.setRowCount(0);
+			for(int i = 0; i <= stackPointer; i++) {
+				model.addRow(new Object[]{dataStack.get(i)});
+			}
 		}
 		repaint();
 	}

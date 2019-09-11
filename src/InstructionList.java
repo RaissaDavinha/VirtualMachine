@@ -7,7 +7,7 @@ import javax.swing.JOptionPane;
 
 
 public class InstructionList {
-	public ArrayList<Instruction> list;
+	private ArrayList<Instruction> list;
 	private Instruction temporaryInstruction;
 	private int haveLabel;
 	private int i;
