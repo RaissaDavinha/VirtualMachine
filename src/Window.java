@@ -7,6 +7,7 @@ import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.Box;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
@@ -50,6 +51,8 @@ public class Window extends JFrame {
 	private JTable outputTable;
 	private JTable inputTable;
 	private String argumento;
+	private boolean inputWasInserted = false;
+	private int readValue = 0;
 	
 	//Launch the application.
 	public static void main(String[] args) {
@@ -201,16 +204,7 @@ public class Window extends JFrame {
 		contentPane.add(scrollPane_output);
 		
 		outputTable = new JTable();
-		outputTable.setModel(new DefaultTableModel(
-		new Object[][] {
-			},
-			new String[] {
-				"Sa\u00EDda"
-			}
-		) {
-			Class[] columnTypes = new Class[] {
-				String.class
-			};
+		outputTable.setModel(new DefaultTableModel(new Object[][] {}, new String[] {"Sa\u00EDda"}) {Class[] columnTypes = new Class[] {String.class};
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
@@ -282,14 +276,18 @@ public class Window extends JFrame {
 			while (machine.getExecuting()) {
 				if(machine.isReadInstruction()) {
 					// wait for input
-					int readValue= 0;
+					while(inputWasInserted != true)
+					JOptionPane.showMessageDialog(null, inputWasInserted);
 					machine.setReadValue(readValue);
+					inputWasInserted = false;
 				}
-				machine.executeMachine();
+				machine.execInstruction();
 				if (machine.isPrintInstruction()) {
 					int printValue = machine.getPrintValue();
 					// print to field
+					DefaultTableModel model = (DefaultTableModel) breakArea.getModel();
 				}
+				machine.programCounterIncrement();
 				// updateInstructionList();
 				updateStack();
 				if (machine.isBreakLine()) {
@@ -310,18 +308,24 @@ public class Window extends JFrame {
 	private class breakEnter implements KeyListener {
 		@Override
 		public void keyPressed(KeyEvent arg0) {
-			if(arg0.getKeyCode() == KeyEvent.VK_ENTER){ 
-				int aux = Integer.parseInt(breakField.getText());
-				breakPoints.add(aux); 					//adiciona o valor recebido a lista de breakpoints
-				System.out.println(aux + " adicionado");
-				DefaultTableModel model = (DefaultTableModel) breakArea.getModel();
-				model.setRowCount(0);
-				for(int i = 0; i < breakPoints.size(); i++) {
-					System.out.println(breakPoints.get(i));
-					model.addRow(new Object[]{breakPoints.get(i)});
+			try {
+				if(arg0.getKeyCode() == KeyEvent.VK_ENTER){ 
+					int aux = Integer.parseInt(breakField.getText());
+					breakPoints.add(aux); 					//adiciona o valor recebido a lista de breakpoints
+					System.out.println(aux + " adicionado");
+					DefaultTableModel model = (DefaultTableModel) breakArea.getModel();
+					model.setRowCount(0);
+					for(int i = 0; i < breakPoints.size(); i++) {
+						System.out.println(breakPoints.get(i));
+						model.addRow(new Object[]{breakPoints.get(i)});
+					}
+					repaint();
+					breakField.setText("");
 				}
-				repaint();
-			} 
+			} catch (Exception e) {
+				breakField.setText("");
+				JOptionPane.showMessageDialog(null, "Not an valid number!");
+			}
 		}
 
 		@Override
@@ -334,9 +338,9 @@ public class Window extends JFrame {
 		public void keyTyped(KeyEvent arg0) {
 			JTextField jtf = (JTextField) arg0.getSource();
 			char key = arg0.getKeyChar();
-			boolean press = (key == KeyEvent.VK_ENTER || (arg0.getKeyChar() == KeyEvent.VK_0)|| (arg0.getKeyChar() == KeyEvent.VK_1)|| (arg0.getKeyChar() == KeyEvent.VK_2) 
-		            || (arg0.getKeyChar() == KeyEvent.VK_3)|| (arg0.getKeyChar() == KeyEvent.VK_4)|| (arg0.getKeyChar() == KeyEvent.VK_5)|| (arg0.getKeyChar() == KeyEvent.VK_6)|| (arg0.getKeyChar() == KeyEvent.VK_7)
-		            || (arg0.getKeyChar() == KeyEvent.VK_8)|| (arg0.getKeyChar() == KeyEvent.VK_9));
+			boolean press = (key == KeyEvent.VK_ENTER || (key == KeyEvent.VK_0)|| (key == KeyEvent.VK_1)|| (key == KeyEvent.VK_2) 
+		            || (key == KeyEvent.VK_3)|| (key == KeyEvent.VK_4)|| (key == KeyEvent.VK_5)|| (key == KeyEvent.VK_6)|| (key == KeyEvent.VK_7)
+		            || (key == KeyEvent.VK_8)|| (key == KeyEvent.VK_9));
 			if (!press) {
 				arg0.consume();
 				System.out.println("nao eh numero");
@@ -359,12 +363,22 @@ public class Window extends JFrame {
 	private class inputEnter implements KeyListener {
 		@Override
 		public void keyPressed(KeyEvent arg0) {
-			if(arg0.getKeyCode() == KeyEvent.VK_ENTER){ 
-				argumento = inputField.getText();
-				DefaultTableModel model = (DefaultTableModel) inputTable.getModel();
-				model.addRow(new Object[]{argumento});
-				repaint();
-			} 
+			try {
+				if(arg0.getKeyCode() == KeyEvent.VK_ENTER){ 
+					argumento = inputField.getText();
+					readValue = Integer.parseInt(argumento);
+					inputWasInserted = true;
+					DefaultTableModel model = (DefaultTableModel) inputTable.getModel();
+					model.addRow(new Object[]{argumento});
+					repaint();
+					inputField.setText("");
+				}
+			}
+			catch (Exception e) {
+				inputField.setText("");
+				argumento = null;
+				JOptionPane.showMessageDialog(null, "Not an valid number!");
+			}
 		}
 		
 		@Override
