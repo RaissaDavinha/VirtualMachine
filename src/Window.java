@@ -1,60 +1,51 @@
-import java.awt.BorderLayout;
+//import java.awt.BorderLayout;
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
-import javax.swing.Box;
-import javax.swing.JList;
+//import javax.swing.Box;
+//import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.border.LineBorder;
+//import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
-
+//import javax.swing.table.TableCellRenderer;
+//import javax.swing.table.TableColumn;
 import java.awt.Color;
-import java.awt.Component;
-
+//import java.awt.Component;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import java.awt.Font;
 import javax.swing.JButton;
-import javax.swing.JComponent;
-
+//import javax.swing.JComponent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.WindowAdapter;
+//import java.awt.event.WindowAdapter;
 import java.util.ArrayList;
-import java.util.Stack;
-import java.util.Vector;
+//import java.util.Stack;
+//import java.util.Vector;
 import java.awt.event.ActionEvent;
-import javax.swing.JTextArea;
+//import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTable;
-import javax.swing.JTextPane;
-import javax.swing.ListSelectionModel;
+//import javax.swing.JTextPane;
+//import javax.swing.ListSelectionModel;
 
-@SuppressWarnings({ "unused", "serial" })
+
+@SuppressWarnings("serial")
 public class Window extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField inputField;
 	private JTable instructionsTable;
 	private JTextField breakField;
 	private JTable breakArea;
 	String path = "object.txt";
 	private JTable stackTable;
-	private Stack<Integer> dataStack;
 	private InstructionList instructions;
 	private VirtualMachine machine = new VirtualMachine(path);
 	private ArrayList<Integer> breakPoints = new ArrayList<Integer>();
 	private JTable outputTable;
-	private JTable inputTable;
-	private JTable instructionsTable_1;
-	private String argumento;
-	private boolean inputWasInserted = false;
-	private int readValue = 0;
 	private int stackPointer;
 	
 	//Launch the application.
@@ -84,21 +75,20 @@ public class Window extends JFrame {
 		setContentPane(contentPane);
 
 		/*==== Instrucoes ====*/
-		JScrollPane scroll = new JScrollPane();
 		contentPane.setLayout(null);
 
 		JScrollPane scrollPane_1 = new JScrollPane();
 		scrollPane_1.setBounds(10, 22, 446, 318);
 		contentPane.add(scrollPane_1);
-		instructionsTable_1 = new JTable(new DefaultTableModel(new Object[][] {}, new String[] { "Linha", "Label", "Instrução", "Atributo 1", "Atributo 2", "Comentário" }) {
+		instructionsTable = new JTable(new DefaultTableModel(new Object[][] {}, new String[] { "Linha", "Label", "Instrução", "Atributo 1", "Atributo 2", "Comentário" }) {
 			Class[] columnTypes = new Class[] { Integer.class, String.class, String.class, String.class, String.class, String.class };
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
 		});
-		scrollPane_1.setViewportView(instructionsTable_1);
-		instructionsTable_1.setGridColor(Color.BLACK);
-		instructionsTable_1.setShowGrid(true);
+		scrollPane_1.setViewportView(instructionsTable);
+		instructionsTable.setGridColor(Color.BLACK);
+		instructionsTable.setShowGrid(true);
 		
 		JLabel lblInstrucoes = new JLabel("Instru\u00E7\u00F5es");
 		lblInstrucoes.setBounds(0, 0, 396, 21);
@@ -111,7 +101,7 @@ public class Window extends JFrame {
 		instructions = machine.getInstructionList();
 		int count = 1;
 		for (Instruction list : instructions.getList()) {
-			DefaultTableModel model = (DefaultTableModel) instructionsTable_1.getModel();
+			DefaultTableModel model = (DefaultTableModel) instructionsTable.getModel();
 			model.addRow(new Object[]{count, list.getLabel(), list.getInstructionName(), list.getArgument1String(), list.getArgument2String(), "NUll"});
 			count++;
 		}
@@ -138,40 +128,10 @@ public class Window extends JFrame {
 			}
 		});
 		scrollStack.setViewportView(stackTable);
-				
-		JScrollPane scrollPane_input = new JScrollPane();
-		scrollPane_input.setBounds(12, 368, 156, 134);
-		contentPane.add(scrollPane_input);
-		
-		//==== Input ====
-		inputTable = new JTable();
-		inputTable.setModel(new DefaultTableModel(
-			new Object[][] {
-			},
-			new String[] {
-				"Entrada"
-			}
-		) {
-			Class[] columnTypes = new Class[] {
-				String.class
-			};
-			public Class getColumnClass(int columnIndex) {
-				return columnTypes[columnIndex];
-			}
-		});
-		scrollPane_input.setViewportView(inputTable);
-
-		inputField = new JTextField();
-		inputField.setBounds(12, 499, 156, 25);
-		contentPane.add(inputField);
-		inputField.setColumns(1);
-				
-		inputEnter inputEnter = new inputEnter();
-		inputField.addKeyListener(inputEnter);
 		
 		//==== BreakPoints ====
 		JScrollPane scrollPane_breakPoint = new JScrollPane();
-		scrollPane_breakPoint.setBounds(337, 368, 119, 134);
+		scrollPane_breakPoint.setBounds(300, 368, 156, 134);
 		contentPane.add(scrollPane_breakPoint);
 
 		breakArea = new JTable();
@@ -192,7 +152,7 @@ public class Window extends JFrame {
 		scrollPane_breakPoint.setViewportView(breakArea);
 				
 		breakField = new JTextField();
-		breakField.setBounds(337, 498, 119, 28);
+		breakField.setBounds(300, 498, 156, 28);
 		contentPane.add(breakField);
 		breakField.setColumns(10);
 		
@@ -201,7 +161,7 @@ public class Window extends JFrame {
 		
 		//==== Output =====
 		JScrollPane scrollPane_output = new JScrollPane();
-		scrollPane_output.setBounds(180, 368, 145, 152);
+		scrollPane_output.setBounds(31, 368, 156, 152);
 		contentPane.add(scrollPane_output);
 		
 		outputTable = new JTable();
@@ -351,7 +311,6 @@ public class Window extends JFrame {
 
 		@Override
 		public void keyTyped(KeyEvent arg0) {
-			JTextField jtf = (JTextField) arg0.getSource();
 			char key = arg0.getKeyChar();
 			boolean press = (key == KeyEvent.VK_ENTER || (key == KeyEvent.VK_0)|| (key == KeyEvent.VK_1)|| (key == KeyEvent.VK_2) 
 		            || (key == KeyEvent.VK_3)|| (key == KeyEvent.VK_4)|| (key == KeyEvent.VK_5)|| (key == KeyEvent.VK_6)|| (key == KeyEvent.VK_7)
@@ -365,20 +324,19 @@ public class Window extends JFrame {
 	private void updateInstruction() {
 		instructions = machine.getInstructionList();
 		int programCounter = machine.getProgramPointer();
-		DefaultTableModel model = (DefaultTableModel) instructionsTable_1.getModel();
+		DefaultTableModel model = (DefaultTableModel) instructionsTable.getModel();
 		model.setRowCount(0);
 		int count = 0;
 		for (Instruction list : instructions.getList()) {
 			if (count == programCounter) {
 				// add light grey row
 			} else {
-				// model.addRow(new Object[]{count, list.getLabel(), list.getInstructionName(), list.getArgument1String(), list.getArgument2String(), "NUll"});
+				model.addRow(new Object[]{count, list.getLabel(), list.getInstructionName(), list.getArgument1String(), list.getArgument2String(), "NUll"});
 			}
 			count++;
 		}
 		repaint();
 	}
-	
 	
 	private void updateStack() {
 		ArrayList<Integer> dataStack = machine.getDataStack();
@@ -392,38 +350,5 @@ public class Window extends JFrame {
 		}
 		repaint();
 	}
-	
-	//==== recebe input ao ser clicado o enter e salva em uma variável ====
-	private class inputEnter implements KeyListener {
-		@Override
-		public void keyPressed(KeyEvent arg0) {
-			try {
-				if(arg0.getKeyCode() == KeyEvent.VK_ENTER){ 
-					argumento = inputField.getText();
-					readValue = Integer.parseInt(argumento);
-					inputWasInserted = true;
-					DefaultTableModel model = (DefaultTableModel) inputTable.getModel();
-					model.addRow(new Object[]{argumento});
-					repaint();
-					inputField.setText("");
-				}
-			}
-			catch (Exception e) {
-				inputField.setText("");
-				argumento = null;
-				JOptionPane.showMessageDialog(null, "Not an valid number!");
-			}
-		}
-		
-		@Override
-		public void keyReleased(KeyEvent arg0) {
-			// TODO Auto-generated method stub
-			
-		}
 
-		@Override
-		public void keyTyped(KeyEvent arg0) {
-			
-		}
-	}
 }
