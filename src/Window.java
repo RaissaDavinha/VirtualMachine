@@ -80,8 +80,16 @@ public class Window extends JFrame {
 		JScrollPane scrollPane_1 = new JScrollPane();
 		scrollPane_1.setBounds(10, 22, 446, 318);
 		contentPane.add(scrollPane_1);
-		instructionsTable = new JTable(new DefaultTableModel(new Object[][] {}, new String[] { "Linha", "Label", "Instrução", "Atributo 1", "Atributo 2", "Comentário" }) {
-			Class[] columnTypes = new Class[] { Integer.class, String.class, String.class, String.class, String.class, String.class };
+		instructionsTable = new JTable(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				" ", "Linha", "Label", "Instru\u00E7\u00E3o", "Atributo 1", "Atributo 2"
+			}
+		) {
+			Class[] columnTypes = new Class[] {
+				String.class, Integer.class, String.class, String.class, String.class, String.class
+			};
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
@@ -102,7 +110,11 @@ public class Window extends JFrame {
 		int count = 1;
 		for (Instruction list : instructions.getList()) {
 			DefaultTableModel model = (DefaultTableModel) instructionsTable.getModel();
-			model.addRow(new Object[]{count, list.getLabel(), list.getInstructionName(), list.getArgument1String(), list.getArgument2String(), "NUll"});
+			if(count == 1) {
+				model.addRow(new Object[]{">",count, list.getLabel(), list.getInstructionName(), list.getArgument1String(), list.getArgument2String(), "NUll"});
+			} else {
+				model.addRow(new Object[]{" ",count, list.getLabel(), list.getInstructionName(), list.getArgument1String(), list.getArgument2String(), "NUll"});
+			}
 			count++;
 		}
 
@@ -277,6 +289,7 @@ public class Window extends JFrame {
 			machine.setVirtualMachineOff();
 			machine.virtualMachineReset();
 			updateStack();
+			updateInstruction();
 		}
 	}
 	
@@ -326,12 +339,12 @@ public class Window extends JFrame {
 		int programCounter = machine.getProgramPointer();
 		DefaultTableModel model = (DefaultTableModel) instructionsTable.getModel();
 		model.setRowCount(0);
-		int count = 0;
+		int count = 1;
 		for (Instruction list : instructions.getList()) {
-			if (count == programCounter) {
-				// add light grey row
+			if (count == programCounter + 1) {
+				model.addRow(new Object[]{">",count, list.getLabel(), list.getInstructionName(), list.getArgument1String(), list.getArgument2String(), "NUll"});
 			} else {
-				model.addRow(new Object[]{count, list.getLabel(), list.getInstructionName(), list.getArgument1String(), list.getArgument2String(), "NUll"});
+				model.addRow(new Object[]{" ", count, list.getLabel(), list.getInstructionName(), list.getArgument1String(), list.getArgument2String(), "NUll"});
 			}
 			count++;
 		}
