@@ -33,6 +33,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTable;
 import javax.swing.JTextPane;
+import javax.swing.ListSelectionModel;
 
 @SuppressWarnings({ "unused", "serial" })
 public class Window extends JFrame {
@@ -50,6 +51,7 @@ public class Window extends JFrame {
 	private ArrayList<Integer> breakPoints = new ArrayList<Integer>();
 	private JTable outputTable;
 	private JTable inputTable;
+	private JTable instructionsTable_1;
 	private String argumento;
 	private boolean inputWasInserted = false;
 	private int readValue = 0;
@@ -88,8 +90,7 @@ public class Window extends JFrame {
 		JScrollPane scrollPane_1 = new JScrollPane();
 		scrollPane_1.setBounds(10, 22, 446, 318);
 		contentPane.add(scrollPane_1);
-		@SuppressWarnings({ "unchecked", "rawtypes"})
-		JTable instructionsTable_1 = new JTable(new DefaultTableModel(new Object[][] {}, new String[] { "Linha", "Label", "Instrução", "Atributo 1", "Atributo 2", "Comentário" }) {
+		instructionsTable_1 = new JTable(new DefaultTableModel(new Object[][] {}, new String[] { "Linha", "Label", "Instrução", "Atributo 1", "Atributo 2", "Comentário" }) {
 			Class[] columnTypes = new Class[] { Integer.class, String.class, String.class, String.class, String.class, String.class };
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
@@ -243,7 +244,26 @@ public class Window extends JFrame {
 	private class botaoJUMP implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
 			//acoes
-			
+			if (machine.getVirtualMachineOn() == true) {
+				try {
+					machine.execInstruction();
+				}
+				catch (Exception e) {
+					Instruction instruction = machine.getInstruction();
+					JOptionPane.showMessageDialog(null, "Error at instruction: " + machine.getProgramPointer() + " " + instruction.getInstructionName());
+				}
+				if (machine.isPrintInstruction()) {
+					JOptionPane.showMessageDialog(null, "print");
+					int printValue = machine.getPrintValue();
+					// print to field
+					DefaultTableModel model = (DefaultTableModel) outputTable.getModel();
+					model.addRow(new Object[]{printValue});
+				}
+				machine.programCounterIncrement();
+				// updateInstructionList();
+				updateStack();
+				updateInstruction();
+			}
 		}	
 	}
 	
@@ -253,13 +273,15 @@ public class Window extends JFrame {
 				DefaultTableModel model = (DefaultTableModel) breakArea.getModel();
 				model.setRowCount(0);
 				breakPoints = new ArrayList<Integer>();
+				machine.clearBreakPoint();
 			}	
 		}
 	
 	private class botaoSTART implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
 			if (machine.getVirtualMachineOn() == false) {
-				
+				machine.virtualMachineReset();
+				machine.setVirtualMachineOn();
 			}
 			machine.setExecutingTrue();
 			while (machine.getExecuting()) {
@@ -280,8 +302,10 @@ public class Window extends JFrame {
 				machine.programCounterIncrement();
 				// updateInstructionList();
 				updateStack();
+				updateInstruction();
 				if (machine.isBreakLine()) {
 					machine.setExecutingFalse();
+					break;
 				}
 			}
 		}
@@ -290,7 +314,9 @@ public class Window extends JFrame {
 	private class botaoSTOP implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
 			//parar looping
-			
+			machine.setVirtualMachineOff();
+			machine.virtualMachineReset();
+			updateStack();
 		}
 	}
 	
@@ -300,8 +326,9 @@ public class Window extends JFrame {
 		public void keyPressed(KeyEvent arg0) {
 			try {
 				if(arg0.getKeyCode() == KeyEvent.VK_ENTER){ 
-					int aux = Integer.parseInt(breakField.getText());
-					breakPoints.add(aux); 					//adiciona o valor recebido a lista de breakpoints
+					int breakIndex = Integer.parseInt(breakField.getText());
+					breakPoints.add(breakIndex); 					//adiciona o valor recebido a lista de breakpoints
+					machine.addBreakPoint(breakIndex);
 					DefaultTableModel model = (DefaultTableModel) breakArea.getModel();
 					model.setRowCount(0);
 					for(int i = 0; i < breakPoints.size(); i++) {
@@ -335,8 +362,26 @@ public class Window extends JFrame {
 		}
 	}
 	
+	private void updateInstruction() {
+		instructions = machine.getInstructionList();
+		int programCounter = machine.getProgramPointer();
+		DefaultTableModel model = (DefaultTableModel) instructionsTable_1.getModel();
+		model.setRowCount(0);
+		int count = 0;
+		for (Instruction list : instructions.getList()) {
+			if (count == programCounter) {
+				// add light grey row
+			} else {
+				// model.addRow(new Object[]{count, list.getLabel(), list.getInstructionName(), list.getArgument1String(), list.getArgument2String(), "NUll"});
+			}
+			count++;
+		}
+		repaint();
+	}
+	
+	
 	private void updateStack() {
-		Stack<Integer> dataStack = machine.getDataStack();
+		ArrayList<Integer> dataStack = machine.getDataStack();
 		stackPointer = machine.getStackPointer();
 		if (stackPointer >= 0) {
 			DefaultTableModel model = (DefaultTableModel) stackTable.getModel();

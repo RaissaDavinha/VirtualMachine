@@ -4,7 +4,7 @@ import java.util.Stack;
 import javax.swing.JOptionPane;
 
 public class VirtualMachine {
-	Stack<Integer> dataStack;
+	ArrayList<Integer> dataStack;
 	InstructionList instructions;
 	public ArrayList<Integer> breakPoints;
 	private int readValue;
@@ -22,7 +22,7 @@ public class VirtualMachine {
 	int stackRecover;
 	
 	public VirtualMachine(String path) {
-		dataStack = new Stack<Integer>();
+		dataStack = new ArrayList<Integer>();
 		instructions = new InstructionList(path);
 		breakPoints = new ArrayList<Integer>();
 		
@@ -43,7 +43,13 @@ public class VirtualMachine {
 		auxRegister = 0;
 		executing = true;
 		virtualMachineOn = true;
-		dataStack = new Stack<Integer>();
+		dataStack = new ArrayList<Integer>();
+	}
+	public void addBreakPoint(int breakIndex) {
+		breakPoints.add(breakIndex);
+	}
+	public void clearBreakPoint() {
+		breakPoints = new ArrayList<Integer>();
 	}
 	public int getStackPointer() {
 		return stackPointer;
@@ -81,7 +87,7 @@ public class VirtualMachine {
 	public Instruction getInstruction() {
 		return instructions.getInstruction(programCounter);
 	}
-	public Stack<Integer> getDataStack() {
+	public ArrayList<Integer> getDataStack() {
 		return dataStack;
 	}
 	public boolean isPrintInstruction() {
@@ -107,69 +113,49 @@ public class VirtualMachine {
 		Instruction instruction = instructions.getInstruction(programCounter);
 		switch (instruction.getInstructionName()) {
 		case "LDC":
-//			if(dataStack.size() < stackPointer + 1) {
-//				dataStack.push(null);
-//			}
+			if(dataStack.size() <= stackPointer + 1) {
+				dataStack.add(0);
+			}
 			stackPointer++;
-//			dataStack.push(instruction.getArgument1Int());
-			dataStack.push(0);
-			dataStack.set(stackPointer, instruction.getArgument1Int());
+			dataStack.add(stackPointer, instruction.getArgument1Int());
 			break;
 			
 		case "LDV":
-//			if(dataStack.size() < stackPointer + 1) {
-//				dataStack.push(null);
-//			}
+			if(dataStack.size() <= stackPointer + 1) {
+				dataStack.add(0);
+			}
 			stackPointer++;
-//			dataStack.push(dataStack.get(instruction.getArgument1Int()));
-//			dataStack.push(2222);
-			dataStack.set(stackPointer, dataStack.get(instruction.getArgument1Int()));
-			
+			dataStack.add(stackPointer, dataStack.get(instruction.getArgument1Int()));			
 			break;
 			
 		case "ADD":
 			auxRegister = dataStack.get(stackPointer - 1) + dataStack.get(stackPointer);
-			dataStack.pop();
+			dataStack.set(stackPointer - 1, auxRegister);
 			stackPointer--;
-			dataStack.pop();
-			stackPointer--;
-			dataStack.push(auxRegister);
-//			dataStack.set(stackPointer, auxRegister);
-			System.out.println("Resultado add " + auxRegister);
-			System.out.println("Topo da pilha dps do add " + dataStack.get(stackPointer));
 			break;
 			
 		case "SUB":
 			auxRegister = dataStack.get(stackPointer - 1) - dataStack.get(stackPointer);
-			dataStack.pop();
+			dataStack.set(stackPointer - 1, auxRegister);
 			stackPointer--;
-			dataStack.pop();
-			stackPointer--;
-			dataStack.push(auxRegister);
 			break;
 			
 		case "MULT":
 			auxRegister = dataStack.get(stackPointer - 1) * dataStack.get(stackPointer);
-			dataStack.pop();
+			dataStack.set(stackPointer - 1, auxRegister);
 			stackPointer--;
-			dataStack.pop();
-			stackPointer--;
-			dataStack.push(auxRegister);
 			break;
 			
 		case "DIVI":
 			auxRegister = dataStack.get(stackPointer - 1) / dataStack.get(stackPointer);
-			dataStack.pop();
+			dataStack.set(stackPointer - 1, auxRegister);
 			stackPointer--;
-			dataStack.pop();
-			stackPointer--;
-			dataStack.push(auxRegister);
 			break;
 			
 		case "INV":
-			auxRegister = dataStack.pop();
-			auxRegister = -auxRegister;
-			dataStack.push(auxRegister);
+			auxRegister = dataStack.get(stackPointer);
+			auxRegister = -1 * auxRegister;
+			dataStack.add(stackPointer, auxRegister);
 			break;
 			
 		case "AND":
@@ -178,224 +164,189 @@ public class VirtualMachine {
 			}else {
 				auxRegister = 0;
 			}
-			dataStack.pop();
+			dataStack.add(stackPointer - 1, auxRegister);
 			stackPointer--;
-			dataStack.pop();
-			stackPointer--;
-			dataStack.push(auxRegister);
-			stackPointer++;
 			break;
 			
 		case "OR":
-			if(dataStack.get(stackPointer - 1) == 1 || dataStack.get(stackPointer) == 1) {
+			if (dataStack.get(stackPointer - 1) == 1 || dataStack.get(stackPointer) == 1) {
 				auxRegister = 1;
 			}else {
 				auxRegister = 0;
 			}
-			
-			dataStack.pop();
+			dataStack.add(stackPointer - 1, auxRegister);
 			stackPointer--;
-			dataStack.pop();
-			stackPointer--;
-			dataStack.push(auxRegister);
-			stackPointer++;
 			break;
 			
 		case "NEG":
-			auxRegister = dataStack.pop();
+			auxRegister = dataStack.get(stackPointer);
 			auxRegister = 1 - auxRegister;
-			dataStack.push(auxRegister);
+			dataStack.add(stackPointer, auxRegister);
 			break;
 		
 		case "CME":
-			if(dataStack.get(stackPointer - 1) < dataStack.get(stackPointer)) {
+			if (dataStack.get(stackPointer - 1) < dataStack.get(stackPointer)) {
 				auxRegister = 1;
 			}else {
 				auxRegister = 0;
 			}
-			dataStack.pop();
+			dataStack.add(stackPointer - 1, auxRegister);
 			stackPointer--;
-			dataStack.pop();
-			stackPointer--;
-			dataStack.push(auxRegister);
-			stackPointer++;
 			break;
 			
 		case "CMA":
-			if(dataStack.get(stackPointer - 1) > dataStack.get(stackPointer)) {
+			if (dataStack.get(stackPointer - 1) > dataStack.get(stackPointer)) {
 				auxRegister = 1;
-				System.out.println("=============================");
-				System.out.println("CMA -1 eh maior");
-				System.out.println("=============================");
 			}else {
 				auxRegister = 0;
-				System.out.println("=============================");
-				System.out.println("CMA -1 eh menor");
-				System.out.println("=============================");
 			}
-			dataStack.pop();
+			dataStack.add(stackPointer - 1, auxRegister);
 			stackPointer--;
-			dataStack.pop();
-			stackPointer--;
-			dataStack.push(auxRegister);
-			stackPointer++;
 			break;
 			
 		case "CEQ":
-			if(dataStack.get(stackPointer - 1) == dataStack.get(stackPointer)) {
+			if (dataStack.get(stackPointer - 1) == dataStack.get(stackPointer)) {
 				auxRegister = 1;
 			}else {
 				auxRegister = 0;
 			}
-			dataStack.pop();
+			dataStack.add(stackPointer - 1, auxRegister);
 			stackPointer--;
-			dataStack.pop();
-			stackPointer--;
-			dataStack.push(auxRegister);
-			stackPointer++;
 			break;
 			
 		case "CDIF":
-			if(dataStack.get(stackPointer - 1) != dataStack.get(stackPointer)) {
+			if (dataStack.get(stackPointer - 1) != dataStack.get(stackPointer)) {
 				auxRegister = 1;
 			}else {
 				auxRegister = 0;
 			}
-			dataStack.pop();
+			dataStack.add(stackPointer - 1, auxRegister);
 			stackPointer--;
-			dataStack.pop();
-			stackPointer--;
-			dataStack.push(auxRegister);
-			stackPointer++;
 			break;
 			
 		case "CMEQ":
-			if(dataStack.get(stackPointer - 1) <= dataStack.get(stackPointer)) {
+			if (dataStack.get(stackPointer - 1) <= dataStack.get(stackPointer)) {
 				auxRegister = 1;
 			}else {
 				auxRegister = 0;
 			}
-			dataStack.pop();
+			dataStack.add(stackPointer - 1, auxRegister);
 			stackPointer--;
-			dataStack.pop();
-			stackPointer--;
-			dataStack.push(auxRegister);
-			stackPointer++;
 			break;
 		
 		case "CMAQ":
-			if(dataStack.get(stackPointer - 1) >= dataStack.get(stackPointer)) {
+			if (dataStack.get(stackPointer - 1) >= dataStack.get(stackPointer)) {
 				auxRegister = 1;
 			}else {
 				auxRegister = 0;
 			}
-			dataStack.pop();
+			dataStack.add(stackPointer - 1, auxRegister);
 			stackPointer--;
-			dataStack.pop();
-			stackPointer--;
-			dataStack.push(auxRegister);
-			stackPointer++;
 			break;
+			
 		case "START":
 			stackPointer = -1;
 			break;
+			
 		case "HLT":
 			setExecutingFalse();
 			setVirtualMachineOff();
+			JOptionPane.showMessageDialog(null, "Halt machine!");
 			break;
+			
 		case "STR":
-//			auxRegister = dataStack.get(instruction.getArgument1Int());
-			
-//			dataStack.push(auxRegister);
-			
+			while (dataStack.size() <= instruction.getArgument1Int() + 1) {
+				dataStack.add(0);
+			}
 			auxRegister = dataStack.get(stackPointer);
 			dataStack.set(instruction.getArgument1Int(), auxRegister);
-			System.out.println("===========================================");
-			System.out.println("Valor do str " + auxRegister);
-			System.out.println("StackPointer dentro do str " + stackPointer);
-			System.out.println("===========================================");
 			stackPointer--;
 			break;
+			
 		case "JMP":
 			jumpPos = instruction.getArgument1String();
-			for (Instruction list : instructions.getList()) {
-				if (instruction.getInstructionName() == jumpPos) {
-					stackPointer = count;
+			count = 0;
+			for (Instruction instruc : instructions.getList()) {
+				if (instruc.getLabel() == jumpPos) {
+					programCounter = count;
+					break;
 				}
 				count++;
 			}
 			break;
+			
 		case "JMPF":
-			System.out.println(stackPointer);
-			System.out.println(dataStack.size());
 			if (dataStack.get(stackPointer) == 0) {
 				jumpPos = instruction.getArgument1String();
-				
-				for (Instruction list : instructions.getList()) {
-					if (instruction.getInstructionName() == jumpPos) {
-						stackPointer = count;
+				count = 0;
+				for (Instruction instruc : instructions.getList()) {
+					if (instruc.getLabel() == jumpPos) {
+						programCounter = count;
+						break;
 					}
 					count++;
 				}
-			}else {
-				programCounter++;
 			}
-			dataStack.pop();
-			break;
-		case "NULL":
-			
-			break;
-		case "RD":
-			stackPointer++;
-			dataStack.push(Integer.parseInt(JOptionPane.showInputDialog(null, "Digite um valor ")));
-			System.out.println("Leitura do dado"+ dataStack.get(stackPointer));
-			break;
-		case "PRN":
-//			printar um resultado
-			printValue = dataStack.pop();
 			stackPointer--;
 			break;
+			
+		case "NULL":
+			break;
+			
+		case "RD":
+			if(dataStack.size() <= stackPointer + 1) {
+				dataStack.add(0);
+			}
+			stackPointer++;
+			dataStack.add(stackPointer, Integer.parseInt(JOptionPane.showInputDialog(null, "Digite um valor ")));
+			break;
+			
+		case "PRN":
+			printValue = dataStack.get(stackPointer);
+			stackPointer--;
+			break;
+			
 		case "ALLOC":
-			for (int k = 0; k <= (instruction.getArgument2Int() -1); k++) {
-				stackPointer++;
-//				while (dataStack.size() < instruction.getArgument1Int() + instruction.getArgument2Int()) {
-//					dataStack.push(0);
-//				}
-				if((instruction.getArgument1Int() + k) >= 0){
-					auxRegister = 0;
-				}else {
-					auxRegister = dataStack.get(instruction.getArgument1Int() + k);
-					System.out.println(auxRegister);
+			for (int k = 0; k < (instruction.getArgument2Int()); k++) {
+				if(dataStack.size() <= stackPointer + 1) {
+					dataStack.add(0);
 				}
-				dataStack.push(auxRegister);
-				dataStack.set(stackPointer, auxRegister);
+				stackPointer++;
+				dataStack.add(stackPointer, dataStack.get(instruction.getArgument1Int() + k));
 			}
 			break;
+			
 		case "DALLOC":
-			for (int k = (instruction.getArgument2Int() - 1); k >=  0; k--) {
-				dataStack.set((instruction.getArgument1Int() + k), dataStack.get(stackPointer));
-				dataStack.pop();
+			for (int k = instruction.getArgument2Int() - 1; k >= 0; k--) {
+				dataStack.add(instruction.getArgument1Int() + k, dataStack.get(stackPointer));
 				stackPointer--;
 			}
 			break;
+			
 		case "CALL":
+			if(dataStack.size() <= stackPointer + 1) {
+				dataStack.add(0);
+			}
 			stackPointer++;
-			stackRecover = stackPointer;
+			dataStack.add(programCounter + 1);
 			jumpPos = instruction.getArgument1String();
-			for (Instruction list : instructions.getList()) {
-				if (instruction.getInstructionName() == jumpPos) {
-					stackPointer = count;
+			count = 0;
+			for (Instruction instruc : instructions.getList()) {
+				if (instruc.getLabel() == jumpPos) {
+					programCounter = count;
+					break;
 				}
 				count++;
 			}
-			
 			break;
+			
 		case "RETURN":
+			programCounter = dataStack.get(stackPointer);
 			stackPointer--;
-			stackPointer = stackRecover;
 			break;
 	
 		default:
+			JOptionPane.showMessageDialog(null, "Invalid Instruction at " + programCounter);
 			break;
 		}
 	}
