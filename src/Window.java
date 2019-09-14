@@ -111,9 +111,9 @@ public class Window extends JFrame {
 		for (Instruction list : instructions.getList()) {
 			DefaultTableModel model = (DefaultTableModel) instructionsTable.getModel();
 			if(count == 1) {
-				model.addRow(new Object[]{">",count, list.getLabel(), list.getInstructionName(), list.getArgument1String(), list.getArgument2String(), "NUll"});
+				model.addRow(new Object[]{">",count, list.getLabel(), list.getInstructionName(), list.getArgument1String(), list.getArgument2String()});
 			} else {
-				model.addRow(new Object[]{" ",count, list.getLabel(), list.getInstructionName(), list.getArgument1String(), list.getArgument2String(), "NUll"});
+				model.addRow(new Object[]{" ",count, list.getLabel(), list.getInstructionName(), list.getArgument1String(), list.getArgument2String()});
 			}
 			count++;
 		}
@@ -342,9 +342,9 @@ public class Window extends JFrame {
 		int count = 1;
 		for (Instruction list : instructions.getList()) {
 			if (count == programCounter + 1) {
-				model.addRow(new Object[]{">",count, list.getLabel(), list.getInstructionName(), list.getArgument1String(), list.getArgument2String(), "NUll"});
+				model.addRow(new Object[]{">",count, list.getLabel(), list.getInstructionName(), list.getArgument1String(), list.getArgument2String()});
 			} else {
-				model.addRow(new Object[]{" ", count, list.getLabel(), list.getInstructionName(), list.getArgument1String(), list.getArgument2String(), "NUll"});
+				model.addRow(new Object[]{" ", count, list.getLabel(), list.getInstructionName(), list.getArgument1String(), list.getArgument2String()});
 			}
 			count++;
 		}
@@ -354,9 +354,9 @@ public class Window extends JFrame {
 	private void updateStack() {
 		ArrayList<Integer> dataStack = machine.getDataStack();
 		stackPointer = machine.getStackPointer();
+		DefaultTableModel model = (DefaultTableModel) stackTable.getModel();
+		model.setRowCount(0);
 		if (stackPointer >= 0) {
-			DefaultTableModel model = (DefaultTableModel) stackTable.getModel();
-			model.setRowCount(0);
 			for(int i = 0; i <= stackPointer; i++) {
 				model.addRow(new Object[]{dataStack.get(i)});
 			}

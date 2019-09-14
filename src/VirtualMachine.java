@@ -39,7 +39,7 @@ public class VirtualMachine {
 	}
 	public void virtualMachineReset() {
 		programCounter = 0;
-		stackPointer = 0;
+		stackPointer = -1;
 		auxRegister = 0;
 		executing = true;
 		virtualMachineOn = true;
