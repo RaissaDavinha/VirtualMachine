@@ -225,7 +225,6 @@ public class Window extends JFrame {
 					JOptionPane.showMessageDialog(null, "Error at instruction: " + machine.getProgramPointer() + " " + instruction.getInstructionName());
 				}
 				if (machine.isPrintInstruction()) {
-					JOptionPane.showMessageDialog(null, "print");
 					int printValue = machine.getPrintValue();
 					// print to field
 					DefaultTableModel model = (DefaultTableModel) outputTable.getModel();
@@ -265,7 +264,6 @@ public class Window extends JFrame {
 					JOptionPane.showMessageDialog(null, "Error at instruction: " + machine.getProgramPointer() + " " + instruction.getInstructionName());
 				}
 				if (machine.isPrintInstruction()) {
-					JOptionPane.showMessageDialog(null, "print");
 					int printValue = machine.getPrintValue();
 					// print to field
 					DefaultTableModel model = (DefaultTableModel) outputTable.getModel();

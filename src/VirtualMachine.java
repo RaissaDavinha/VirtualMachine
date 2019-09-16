@@ -34,8 +34,8 @@ public class VirtualMachine {
 		programCounter = 0;
 		stackPointer = 0;
 		auxRegister = 0;
-		executing = true;
-		virtualMachineOn = true;
+		executing = false;
+		virtualMachineOn = false;
 	}
 	public void virtualMachineReset() {
 		programCounter = 0;
@@ -265,26 +265,28 @@ public class VirtualMachine {
 			
 		case "JMP":
 			jumpPos = instruction.getArgument1String();
-			count = 0;
-			for (Instruction instruc : instructions.getList()) {
-				if (instruc.getLabel() == jumpPos) {
-					programCounter = count;
-					break;
+			for (count = 0; count < instructions.getList().size(); count++) {
+				String auxLabel = instructions.getInstruction(count).getLabel();
+				if (auxLabel != null) {
+					if (auxLabel.equals(jumpPos)) {
+						programCounter = count;
+						break;
+					}	
 				}
-				count++;
 			}
 			break;
 			
 		case "JMPF":
 			if (dataStack.get(stackPointer) == 0) {
 				jumpPos = instruction.getArgument1String();
-				count = 0;
-				for (Instruction instruc : instructions.getList()) {
-					if (instruc.getLabel() == jumpPos) {
-						programCounter = count;
-						break;
+				for (count = 0; count < instructions.getList().size(); count++) {
+					String auxLabel = instructions.getInstruction(count).getLabel();
+					if (auxLabel != null) {
+						if (auxLabel.equals(jumpPos)) {
+							programCounter = count;
+							break;
+						}	
 					}
-					count++;
 				}
 			}
 			stackPointer--;
@@ -330,13 +332,14 @@ public class VirtualMachine {
 			stackPointer++;
 			dataStack.add(programCounter + 1);
 			jumpPos = instruction.getArgument1String();
-			count = 0;
-			for (Instruction instruc : instructions.getList()) {
-				if (instruc.getLabel() == jumpPos) {
-					programCounter = count;
-					break;
+			for (count = 0; count < instructions.getList().size(); count++) {
+				String auxLabel = instructions.getInstruction(count).getLabel();
+				if (auxLabel != null) {
+					if (auxLabel.equals(jumpPos)) {
+						programCounter = count;
+						break;
+					}	
 				}
-				count++;
 			}
 			break;
 			
