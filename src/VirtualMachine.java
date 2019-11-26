@@ -117,7 +117,7 @@ public class VirtualMachine {
 				dataStack.add(0);
 			}
 			stackPointer++;
-			dataStack.add(stackPointer, instruction.getArgument1Int());
+			dataStack.set(stackPointer, instruction.getArgument1Int());
 			break;
 			
 		case "LDV":
@@ -125,7 +125,7 @@ public class VirtualMachine {
 				dataStack.add(0);
 			}
 			stackPointer++;
-			dataStack.add(stackPointer, dataStack.get(instruction.getArgument1Int()));			
+			dataStack.set(stackPointer, dataStack.get(instruction.getArgument1Int()));			
 			break;
 			
 		case "ADD":
@@ -155,7 +155,7 @@ public class VirtualMachine {
 		case "INV":
 			auxRegister = dataStack.get(stackPointer);
 			auxRegister = -1 * auxRegister;
-			dataStack.add(stackPointer, auxRegister);
+			dataStack.set(stackPointer, auxRegister);
 			break;
 			
 		case "AND":
@@ -164,7 +164,7 @@ public class VirtualMachine {
 			}else {
 				auxRegister = 0;
 			}
-			dataStack.add(stackPointer - 1, auxRegister);
+			dataStack.set(stackPointer - 1, auxRegister);
 			stackPointer--;
 			break;
 			
@@ -174,14 +174,14 @@ public class VirtualMachine {
 			}else {
 				auxRegister = 0;
 			}
-			dataStack.add(stackPointer - 1, auxRegister);
+			dataStack.set(stackPointer - 1, auxRegister);
 			stackPointer--;
 			break;
 			
 		case "NEG":
 			auxRegister = dataStack.get(stackPointer);
 			auxRegister = 1 - auxRegister;
-			dataStack.add(stackPointer, auxRegister);
+			dataStack.set(stackPointer, auxRegister);
 			break;
 		
 		case "CME":
@@ -190,7 +190,7 @@ public class VirtualMachine {
 			}else {
 				auxRegister = 0;
 			}
-			dataStack.add(stackPointer - 1, auxRegister);
+			dataStack.set(stackPointer - 1, auxRegister);
 			stackPointer--;
 			break;
 			
@@ -200,7 +200,7 @@ public class VirtualMachine {
 			}else {
 				auxRegister = 0;
 			}
-			dataStack.add(stackPointer - 1, auxRegister);
+			dataStack.set(stackPointer - 1, auxRegister);
 			stackPointer--;
 			break;
 			
@@ -210,7 +210,7 @@ public class VirtualMachine {
 			}else {
 				auxRegister = 0;
 			}
-			dataStack.add(stackPointer - 1, auxRegister);
+			dataStack.set(stackPointer - 1, auxRegister);
 			stackPointer--;
 			break;
 			
@@ -220,7 +220,7 @@ public class VirtualMachine {
 			}else {
 				auxRegister = 0;
 			}
-			dataStack.add(stackPointer - 1, auxRegister);
+			dataStack.set(stackPointer - 1, auxRegister);
 			stackPointer--;
 			break;
 			
@@ -230,7 +230,7 @@ public class VirtualMachine {
 			}else {
 				auxRegister = 0;
 			}
-			dataStack.add(stackPointer - 1, auxRegister);
+			dataStack.set(stackPointer - 1, auxRegister);
 			stackPointer--;
 			break;
 		
@@ -240,7 +240,7 @@ public class VirtualMachine {
 			}else {
 				auxRegister = 0;
 			}
-			dataStack.add(stackPointer - 1, auxRegister);
+			dataStack.set(stackPointer - 1, auxRegister);
 			stackPointer--;
 			break;
 			
@@ -300,7 +300,7 @@ public class VirtualMachine {
 				dataStack.add(0);
 			}
 			stackPointer++;
-			dataStack.add(stackPointer, Integer.parseInt(JOptionPane.showInputDialog(null, "Digite um valor ")));
+			dataStack.set(stackPointer, Integer.parseInt(JOptionPane.showInputDialog(null, "Digite um valor ")));
 			break;
 			
 		case "PRN":
@@ -310,17 +310,19 @@ public class VirtualMachine {
 			
 		case "ALLOC":
 			for (int k = 0; k < (instruction.getArgument2Int()); k++) {
-				if(dataStack.size() <= stackPointer + 1) {
-					dataStack.add(0);
+				if(dataStack.size() < stackPointer + instruction.getArgument2Int() + 1) {
+					while (dataStack.size() < stackPointer + instruction.getArgument2Int() + 1) {
+						dataStack.add(0);
+					}
 				}
 				stackPointer++;
-				dataStack.add(stackPointer, dataStack.get(instruction.getArgument1Int() + k));
+				dataStack.set(stackPointer, dataStack.get(instruction.getArgument1Int() + k));
 			}
 			break;
 			
 		case "DALLOC":
 			for (int k = instruction.getArgument2Int() - 1; k >= 0; k--) {
-				dataStack.add(instruction.getArgument1Int() + k, dataStack.get(stackPointer));
+				dataStack.set(instruction.getArgument1Int() + k, dataStack.get(stackPointer));
 				stackPointer--;
 			}
 			break;
@@ -330,7 +332,7 @@ public class VirtualMachine {
 				dataStack.add(0);
 			}
 			stackPointer++;
-			dataStack.add(programCounter + 1);
+			dataStack.set(stackPointer, programCounter + 1);
 			jumpPos = instruction.getArgument1String();
 			for (count = 0; count < instructions.getList().size(); count++) {
 				String auxLabel = instructions.getInstruction(count).getLabel();
@@ -346,6 +348,17 @@ public class VirtualMachine {
 		case "RETURN":
 			programCounter = dataStack.get(stackPointer);
 			stackPointer--;
+			break;
+			
+		case "RETURNF":
+			auxRegister = dataStack.get(stackPointer);
+			stackPointer--;
+			for (int k = instruction.getArgument2Int() - 1; k >= 0; k--) {
+				dataStack.set(instruction.getArgument1Int() + k, dataStack.get(stackPointer));
+				stackPointer--;
+			}
+			programCounter = dataStack.get(stackPointer) - 1;
+			dataStack.set(stackPointer, auxRegister);
 			break;
 	
 		default:

@@ -66,6 +66,7 @@ public class InstructionList {
 			case "DALLOC":
 			case "CALL":
 			case "RETURN":
+			case "RETURNF":
 				return true;
 			default:
 				return false;
