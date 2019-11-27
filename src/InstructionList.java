@@ -89,6 +89,10 @@ public class InstructionList {
 
 		String separatedInstructions[] = fileReturn.split("\n");
 		for (i = 0; i < separatedInstructions.length; i++) {
+			if (i > 91) {
+				i++;
+				i--;
+			}
 			temporaryInstruction = new Instruction();
 			
 			String instructionNameArgument[] = separatedInstructions[i].split(" ");

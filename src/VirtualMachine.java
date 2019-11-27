@@ -346,12 +346,12 @@ public class VirtualMachine {
 			break;
 			
 		case "RETURN":
-			programCounter = dataStack.get(stackPointer);
+			programCounter = dataStack.get(stackPointer) - 1;
 			stackPointer--;
 			break;
 			
 		case "RETURNF":
-			auxRegister = dataStack.get(stackPointer);
+			auxRegister = dataStack.get(stackPointer) - 1;
 			stackPointer--;
 			for (int k = instruction.getArgument2Int() - 1; k >= 0; k--) {
 				dataStack.set(instruction.getArgument1Int() + k, dataStack.get(stackPointer));
