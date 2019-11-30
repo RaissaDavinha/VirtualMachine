@@ -357,9 +357,7 @@ public class VirtualMachine {
 			
 		case "RETURNF":
 			auxRegister = dataStack.get(stackPointer);
-			dataStack.set(stackPointer, dataStack.get(stackPointer  - 1));
-			dataStack.set(stackPointer - 1,  auxRegister);
-			
+			stackPointer--;
 			for (int k = instruction.getArgument2Int() - 1; k >= 0; k--) {
 				if(dataStack.size() < stackPointer + instruction.getArgument2Int() + 1 || dataStack.size() < instruction.getArgument1Int() + instruction.getArgument2Int() + 1) {
 					while (dataStack.size() < stackPointer + instruction.getArgument2Int() + 1 || dataStack.size() < instruction.getArgument1Int() + instruction.getArgument2Int() + 1) {
@@ -369,10 +367,8 @@ public class VirtualMachine {
 				dataStack.set(instruction.getArgument1Int() + k, dataStack.get(stackPointer));
 				stackPointer--;
 			}
-			
 			programCounter = dataStack.get(stackPointer) - 1;
-			stackPointer--;
-//			dataStack.set(stackPointer, auxRegister);
+			dataStack.set(stackPointer, auxRegister);
 			break;
 	
 		default:

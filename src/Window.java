@@ -40,7 +40,7 @@ public class Window extends JFrame {
 	private JTable instructionsTable;
 	private JTextField breakField;
 	private JTable breakArea;
-	String path = "/Users/pedro/Desktop/PUC/Compiladores/Compilador/object.txt";
+	String path = "/Users/pedro/Desktop/CompilaBack/object.txt";
 	private JTable stackTable;
 	private InstructionList instructions;
 	private VirtualMachine machine = new VirtualMachine(path);
